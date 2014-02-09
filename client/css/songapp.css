@@ -1,0 +1,22 @@
+/* CSS declarations go here */
+
+.header-separator {
+    margin-bottom: 36px;
+}
+
+aside {
+    padding-bottom: 20px;
+}
+
+#editor-panel {
+    margin-top: 1em;
+}
+
+#editor {
+    min-height: 20em;
+}
+
+[contenteditable=true]:empty:before {
+    content: attr(data-placeholder);
+    color: #888;
+}

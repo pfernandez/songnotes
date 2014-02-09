@@ -1,0 +1,21 @@
+<template name="songList">
+    {{#if currentUser}}
+    <div class="list-group">
+        {{#each userSongs}}
+            {{> songItem}}
+        {{/each}}
+    </div>
+    <button type="button" class="addSong btn btn-default">
+        <span class="glyphicon glyphicon-plus"></span> Add a new song
+    </button>
+    {{/if}}
+</template>
+
+<template name="songItem">
+    <a href="#" class="list-group-item toggle in {{songClass}}">
+        {{title}}
+        <button type="button" class="removeSong close pull-right">
+            &times;
+        </button>
+    </a>
+</template>

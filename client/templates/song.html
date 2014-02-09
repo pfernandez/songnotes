@@ -1,0 +1,17 @@
+<template name="song">
+
+    <div id="controls">
+        <div class="input-group input-group-lg">
+            <input type="text" tabindex="1" class="form-control"
+                id="song-title" placeholder="Enter a title"
+                {{#if currentUser}}value="{{songTitle}}"{{/if}}>
+        </div>
+        <span id="rec-indicator"></span>
+    </div>
+
+    <div id="editor-panel" class="panel panel-default">
+        <div tabindex="2" data-placeholder="Type some lyrics..." 
+            id="editor" class="panel-body" contenteditable="true"
+            >{{#if currentUser}}{{{songLyrics}}}{{/if}}</div>
+    </div>
+</template>
