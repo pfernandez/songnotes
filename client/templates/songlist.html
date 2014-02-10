@@ -12,9 +12,10 @@
 </template>
 
 <template name="songItem">
-    <a href="#" class="list-group-item toggle in {{songClass}}">
+    <a href="{{href}}" class="list-group-item toggle in {{songClass}}">
         {{title}}
-        <button type="button" class="removeSong close pull-right">
+        <button type="button" class="close pull-right"
+            data-toggle="modal" data-target="#deleteSongModal">
             &times;
         </button>
     </a>

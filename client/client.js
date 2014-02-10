@@ -3,8 +3,7 @@ This file will be executed only on the client.
 */
 
 
-var id = null,
-    untitled = false;
+var id = null;
 
 // Retrieve the current song ID on login or refresh.
 Meteor.autorun(function() {
@@ -33,7 +32,10 @@ var addSong = function(properties) {
             
             // If a title was passed in...
             if(properties && properties.hasOwnProperty('title')) {
-                Session.set('song_title', newSong.title);
+                Session.set('title', newSong.title);
+            }
+            else {
+                Session.set('title', '');
             }
         }
     });
@@ -49,6 +51,11 @@ var removeSong = function(songId) {
 var setCurrentSong = function(songId) {
     id = songId;
     Session.set('song_id', songId);
+    var title = '';
+    if(songId) {
+        title = Songs.findOne({_id: id}, {fields: {title: 1}}).title;
+    }
+    Session.set('title', title);
     Meteor.users.update({_id: Meteor.userId()}, {$set: {currentSong: songId}});
 }
 
@@ -57,12 +64,11 @@ var setCurrentSong = function(songId) {
 ////////////////////////////////////////////////////////////////////////////////
 // song.html
 
-var savedSelection = null;
+var savedSelection = null,
+    editorHasFocus = null;
 
 Template.song.songTitle = function() {
-    if(id) {
-        return Songs.findOne({_id: id}, {fields: {title: 1}}).title;
-    }
+    return Session.get('title');
 }
     
 Template.song.songLyrics = function() {
@@ -79,6 +85,7 @@ Template.song.events({
     'change input' : function(e) {
         var newTitle = getUniqueTitle(e.target.value);
         if(id) {
+            Session.set('title', newTitle);
 		    Songs.update({_id: id}, {$set: {title: newTitle}});
 		}
 		else {
@@ -97,13 +104,27 @@ Template.song.events({
 	    else {
 	        addSong({lyrics: _.escape(e.target.innerHTML)});
 	    }
+    },
     
+    'focus #editor': function() {
+        editorHasFocus = true;
+    },
+    
+    'blur #editor': function() {
+        editorHasFocus = false;
     }
 });
 
 Template.song.rendered = function() {
+
+    // Restore selection and/or cursor postion when the editor is redrawn.
     if(savedSelection) {
         rangy.restoreSelection(savedSelection);
+    }
+    
+    // Updating the song list causes the editor to lose focus. Refocus it.
+    if(editorHasFocus) {
+        this.find('#editor').focus();
     }
 }
 
@@ -119,7 +140,6 @@ Template.songList.userSongs = function() {
 Template.songList.events({
     // add an empty song when the button is clicked.
     'click .addSong' : function(e) {
-        e.preventDefault();
         addSong();
     },
 });
@@ -128,19 +148,33 @@ Template.songList.currentSong = function() {
     return Session.get('song_id');
 }
 
+Template.songList.rendered = function() {
+
+    // If the user has any songs, make sure one is always current.
+    var list = this.findAll('.list-group-item');
+    if(list.length > 0 && ! this.find('.active')) {
+        list[list.length-1].click();
+    }
+}
+
+Template.songItem.href = function() {
+    return '/' + this._id;
+}
+
 Template.songItem.songClass = function() {
     return Session.equals('song_id', this._id) ? 'active' : '';
 }
 
 Template.songItem.events({
-    'click': function() {
+    'click': function(e) {
+        e.preventDefault();
         setCurrentSong(this._id);
     }
 });
 
 Template.songItem.events({
     // Remove song when the button is clicked.
-    'click .removeSong' : function() {
+    'click .removeSong' : function(e) {
         removeSong(this._id);
     }
 });

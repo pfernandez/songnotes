@@ -49,8 +49,6 @@ Meteor.methods({
                 properties.lyrics = '';
             }
         
-            getUniqueTitle();
-            
             // Make sure only allowed properties are inserted.
             var song = _.extend(_.pick(properties, 'title', 'lyrics'), {
                 ownerId: user, created: new Date().getTime()

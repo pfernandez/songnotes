@@ -14,14 +14,16 @@
 
 <template name="layout">
 
-    <div class="container">
+    {{yield 'deleteSongDialog'}}
+
+    <div class="container-fluid">
     
         <header class="row">
-            <div class="col-md-3">
-                <h1>Songnotes</h1>
-            </div>
-            <div class="col-md-9">
-                {{loginButtons align="right"}}
+            <div class="col-md-12">
+                <h1 class="pull-left">Songnotes</h1>
+                <ul class="sign-in-up pull-right">
+                    {{loginButtons}}
+                </ul>
             </div>
         </header>
         
