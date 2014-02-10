@@ -3,7 +3,12 @@ This file will be executed only on the client.
 */
 
 
-var id = null;
+// Variables to be used for local temp storage.
+var id,
+    savedSelection,
+    editorHasFocus,
+    songToDelete;
+    
 
 // Retrieve the current song ID on login or refresh.
 Meteor.autorun(function() {
@@ -11,7 +16,7 @@ Meteor.autorun(function() {
         id = Meteor.users.findOne(
             {_id: Meteor.userId()},
             {fields: {'currentSong': 1}}
-        ).currentSong
+        ).currentSong;
         Session.set('song_id', id);
     }
     else {
@@ -53,19 +58,20 @@ var setCurrentSong = function(songId) {
     Session.set('song_id', songId);
     var title = '';
     if(songId) {
-        title = Songs.findOne({_id: id}, {fields: {title: 1}}).title;
+        title = getTitle(id);
     }
     Session.set('title', title);
     Meteor.users.update({_id: Meteor.userId()}, {$set: {currentSong: songId}});
 }
 
+var getTitle = function(songId) {
+    Songs.findOne({_id: songId}, {fields: {title: 1}}).title;
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////
 // song.html
 
-var savedSelection = null,
-    editorHasFocus = null;
 
 Template.song.songTitle = function() {
     return Session.get('title');
@@ -174,10 +180,20 @@ Template.songItem.events({
 
 Template.songItem.events({
     // Remove song when the button is clicked.
-    'click .removeSong' : function(e) {
-        removeSong(this._id);
+    'click .close' : function(e) {
+        songToDelete = this._id;
     }
 });
 
 
+
+////////////////////////////////////////////////////////////////////////////////
+// delete.html
+
+Template.deleteSongDialog.events({
+    // Remove song when the button is clicked.
+    'click .removeSong' : function(e) {
+        removeSong(songToDelete);
+    }
+});
 
