@@ -15,25 +15,23 @@
 <template name="layout">
 
     {{yield 'deleteSongDialog'}}
+    
+    <div class="navbar navbar-default" role="navigation">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#">Songnotes</a>
+        </div>
+        <div class="navbar-collapse collapse">
+        <ul class="nav navbar-nav navbar-right">
+            {{loginButtons}}
+        </ul>
+        </div>
+    </div>
 
     <div class="container-fluid">
-    
-        <header class="row">
-            <div class="col-md-12">
-                <h1 class="pull-left">Songnotes</h1>
-                <ul class="sign-in-up pull-right">
-                    {{loginButtons}}
-                </ul>
-            </div>
-        </header>
-        
-        <hr class="header-separator"/>
-        
         <div class="row">
-            <aside id="songList" class="col-md-3">{{yield 'aside'}}</aside>
+            <aside id="songList" class="col-md-2">{{yield 'aside'}}</aside>
             <article id="song"  class="col-md-6 col-md-offset-1">{{yield}}</div>
         </div>
-    
     </div>
     
 </template>

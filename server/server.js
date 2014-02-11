@@ -8,11 +8,12 @@ Meteor.publish('songs', function() {
 });
 
 Meteor.publish('userData', function () {
-  return Meteor.users.find({_id: this.userId}, {fields: {'currentSong': 1}});
+  return Meteor.users.find({_id: this.userId},
+    {fields: {'currentSongId': 1}});
 });
 
 // Add fields to the user document upon creation.
 Accounts.onCreateUser(function(options, user) {
-    user.currentSong = null;
+    user.currentSongId = null;
     return user;
 });

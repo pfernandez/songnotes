@@ -39,10 +39,6 @@ Meteor.methods({
                 properties = {};
             }
             
-            if(! properties.title) {
-                properties.title = 'Untitled Song';
-            }
-            
             properties.title = getUniqueTitle(properties.title);
             
             if(! properties.lyrics) {
@@ -68,6 +64,10 @@ getSongList = function(userId) {
 
 // If the desired title is not unique, append and integer to it.
 getUniqueTitle = function(title) {
+
+    if(! title) {
+        title = 'Untitled Song';
+    }
 
     var songs = getSongList(Meteor.userId()).fetch(),
         newTitle = title,
@@ -100,6 +100,6 @@ getUniqueTitle = function(title) {
 Meteor.users.allow({
     update: function(userId, doc, fields, modifier) {
         // Users can only update the current song ID.
-        return (fields.length === 1 && _.contains(fields, 'currentSong'));
+        return (fields.length === 1 && _.contains(fields, 'currentSongId'));
     }
 });

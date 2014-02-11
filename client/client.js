@@ -3,24 +3,24 @@ This file will be executed only on the client.
 */
 
 
-// Variables to be used for local temp storage.
-var id,
-    savedSelection,
-    editorHasFocus,
-    songToDelete;
-    
+////////////////////////////////////////////////////////////////////////////////
+// Helper Variables and Functions
 
-// Retrieve the current song ID on login or refresh.
+var id = null,              // the _id of the current song
+    savedSelection = null,  // temp storage for the Rangy library
+    editorHasFocus = false, // used to return focus to editor on hot reload
+    untitled = false;       // used to avoid undesired hot reload of title input
+
+// Reactive data storage for the delete dialog.
+Session.setDefault('songToDelete', {_id: null, title: null});
+
+// Retrieve the current song ID and title on login or refresh.
 Meteor.autorun(function() {
-    if(Meteor.userId()) {
-        id = Meteor.users.findOne(
-            {_id: Meteor.userId()},
-            {fields: {'currentSong': 1}}
-        ).currentSong;
-        Session.set('song_id', id);
-    }
-    else {
-        Session.set('song_id', null);
+    var userId = Meteor.userId();
+    if(userId && ! id) {
+        var user = Meteor.users.findOne({_id: userId},
+            {fields: {currentSongId: 1}});
+        id = user.currentSongId;
     }
 });
 
@@ -37,36 +37,30 @@ var addSong = function(properties) {
             
             // If a title was passed in...
             if(properties && properties.hasOwnProperty('title')) {
-                Session.set('title', newSong.title);
+                untitled = false;
             }
             else {
-                Session.set('title', '');
+                untitled = true;
             }
         }
     });
 }
 
-var removeSong = function(songId) {
-    Songs.remove(songId);
-    setCurrentSong(null);
-}
-
-// Set the a session variable and update the user document to the 
-// ID of the current song.
 var setCurrentSong = function(songId) {
     id = songId;
-    Session.set('song_id', songId);
-    var title = '';
-    if(songId) {
-        title = getTitle(id);
-    }
-    Session.set('title', title);
-    Meteor.users.update({_id: Meteor.userId()}, {$set: {currentSong: songId}});
+    Meteor.users.update({_id: Meteor.userId()}, {$set: {currentSongId: id}});
 }
 
 var getTitle = function(songId) {
-    Songs.findOne({_id: songId}, {fields: {title: 1}}).title;
+    var songObj = Songs.findOne({_id: songId}, {fields: {title: 1}});
+    if(songObj && ! untitled) {
+        return songObj.title;
+    }
+    else {
+        return '';
+    }
 }
+
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -74,9 +68,9 @@ var getTitle = function(songId) {
 
 
 Template.song.songTitle = function() {
-    return Session.get('title');
+    return getTitle(id);
 }
-    
+
 Template.song.songLyrics = function() {
     if(id) {
         return _.unescape(
@@ -91,8 +85,8 @@ Template.song.events({
     'change input' : function(e) {
         var newTitle = getUniqueTitle(e.target.value);
         if(id) {
-            Session.set('title', newTitle);
 		    Songs.update({_id: id}, {$set: {title: newTitle}});
+		    untitled = false;
 		}
 		else {
 		    addSong({title: newTitle});
@@ -150,10 +144,6 @@ Template.songList.events({
     },
 });
 
-Template.songList.currentSong = function() {
-    return Session.get('song_id');
-}
-
 Template.songList.rendered = function() {
 
     // If the user has any songs, make sure one is always current.
@@ -168,20 +158,26 @@ Template.songItem.href = function() {
 }
 
 Template.songItem.songClass = function() {
-    return Session.equals('song_id', this._id) ? 'active' : '';
+    return (id === this._id) ? 'active' : '';
 }
 
 Template.songItem.events({
-    'click': function(e) {
+    'click .list-group-item': function(e) {
         e.preventDefault();
-        setCurrentSong(this._id);
+        if(! Session.get('songToDelete')._id) {
+            untitled = false;
+            setCurrentSong(this._id);
+        }
     }
 });
 
 Template.songItem.events({
     // Remove song when the button is clicked.
     'click .close' : function(e) {
-        songToDelete = this._id;
+        Session.set('songToDelete', {
+            _id: this._id,
+            title: getTitle(this._id)
+        });
     }
 });
 
@@ -190,10 +186,19 @@ Template.songItem.events({
 ////////////////////////////////////////////////////////////////////////////////
 // delete.html
 
+Template.deleteSongDialogBody.deleteSongTitle = function() {
+    return Session.get('songToDelete').title;
+}
+
 Template.deleteSongDialog.events({
     // Remove song when the button is clicked.
     'click .removeSong' : function(e) {
-        removeSong(songToDelete);
+        var songId = Session.get('songToDelete')._id;
+        if(songId === id) {
+            setCurrentSong(null);
+        }
+        Songs.remove(songId);
+        Session.set('songToDelete', {_id: null, title: 'this song'});
     }
 });
 
