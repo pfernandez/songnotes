@@ -8,7 +8,6 @@ preserve-inputs
 iron-router
 spin
 accounts-password
-accounts-google
 jquery
 amplify
 accounts-ui-bootstrap-3

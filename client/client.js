@@ -3,26 +3,38 @@ This file will be executed only on the client.
 */
 
 
+
 ////////////////////////////////////////////////////////////////////////////////
 // Helper Variables and Functions
 
+
 var id = null,              // the _id of the current song
+    justLoggedIn = false,   // so we can store an entered song on login
     savedSelection = null,  // temp storage for the Rangy library
     editorHasFocus = false, // used to return focus to editor on hot reload
     untitled = false;       // used to avoid undesired hot reload of title input
 
+
 // Reactive data storage for the delete dialog.
 Session.setDefault('songToDelete', {_id: null, title: null});
 
-// Retrieve the current song ID and title on login or refresh.
-Meteor.autorun(function() {
-    var userId = Meteor.userId();
-    if(userId && ! id) {
-        var user = Meteor.users.findOne({_id: userId},
-            {fields: {currentSongId: 1}});
+
+// Store a song to the user database to be retrieved on the next visit.
+var setCurrentSong = function(songId) {
+    id = songId;
+    Meteor.users.update({_id: Meteor.userId()}, {$set: {currentSongId: id}});
+}
+
+
+// Set the id to the user's most recently visited song.
+var loadMostRecentSong = function() {
+    var user = Meteor.users.findOne({_id: Meteor.userId()},
+        {fields: {currentSongId: 1}});
+    if(user) {
         id = user.currentSongId;
     }
-});
+}
+
 
 // Attempt to add a new song on the server, and store it's ID as
 // the user's current song if successful.
@@ -46,11 +58,8 @@ var addSong = function(properties) {
     });
 }
 
-var setCurrentSong = function(songId) {
-    id = songId;
-    Meteor.users.update({_id: Meteor.userId()}, {$set: {currentSongId: id}});
-}
 
+// Returns a song title, or an empty string if it's untitled.
 var getTitle = function(songId) {
     var songObj = Songs.findOne({_id: songId}, {fields: {title: 1}});
     if(songObj && ! untitled) {
@@ -60,6 +69,50 @@ var getTitle = function(songId) {
         return '';
     }
 }
+
+
+
+// Retrieve the current song ID and title on login or refresh.
+Deps.autorun(function() {
+
+    if(Meteor.loggingIn()) {
+        justLoggedIn = true;
+    }
+
+    var userId = Meteor.userId();
+    
+    if(userId && ! id) {
+        // If there was a song begun before login, add it to the database.
+        // Otherwise load the most recent song.
+        if(justLoggedIn) {
+        
+            var titleElement = document.getElementById('song-title'),
+                lyricsElement = document.getElementById('editor'),
+                newTitle = null,
+                newLyrics = null;
+                
+            if(titleElement) {
+                var newTitle = titleElement.value;
+            }
+            
+            if(lyricsElement) {
+                var newLyrics = lyricsElement.innerHTML;
+            }
+            
+            if(newTitle || newLyrics) {
+                addSong({title: newTitle, lyrics: newLyrics});
+            }
+            
+            justLoggedIn = false;
+        }
+        
+        loadMostRecentSong();
+    }
+    else if(! userId && id) {
+        // The user just logged out, so remove the current song.
+        id = null;
+    }
+});
 
 
 
@@ -185,6 +238,7 @@ Template.songItem.events({
 
 ////////////////////////////////////////////////////////////////////////////////
 // delete.html
+
 
 Template.deleteSongDialogBody.deleteSongTitle = function() {
     return Session.get('songToDelete').title;
