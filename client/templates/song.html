@@ -1,17 +1,26 @@
 <template name="song">
 
-    <div id="controls">
-        <div class="input-group input-group-lg">
+    <div id="controls" class="clearfix">
+        <div class="pull-left input-group input-group-lg">
             <input type="text" tabindex="1" class="form-control"
                 id="song-title" placeholder="Enter a title"
                 {{#if currentUser}}value="{{songTitle}}"{{/if}}>
         </div>
-        <span id="rec-indicator"></span>
+        <p class="save-indicator pull-right soft-text">
+            {{#if currentUser}}
+                {{#isolate}}{{saveIndicator}}{{/isolate}}
+            {{/if}}
+        </p>
     </div>
 
     <div id="editor-panel" class="panel panel-default">
-        <div tabindex="2" data-placeholder="Type some lyrics..." 
+        <div tabindex="2" data-placeholder="Type some content..." 
             id="editor" class="panel-body" contenteditable="true"
-            >{{#if currentUser}}{{{songLyrics}}}{{/if}}</div>
+            >{{#if currentUser}}{{{songContent}}}{{/if}}</div>
     </div>
+    {{#unless currentUser}}
+        <button type="button" class="logInToSave pull-right btn btn-default">
+            Log in to save
+        </button>
+    {{/unless}}
 </template>

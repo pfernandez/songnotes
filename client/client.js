@@ -8,68 +8,89 @@ This file will be executed only on the client.
 // Helper Variables and Functions
 
 
-var id = null,              // the _id of the current song
-    justLoggedIn = false,   // so we can store an entered song on login
+var justLoggedIn = false,   // so we can store an entered song on login
     savedSelection = null,  // temp storage for the Rangy library
     editorHasFocus = false, // used to return focus to editor on hot reload
-    untitled = false;       // used to avoid undesired hot reload of title input
+    timeOut = null,
+    interval = null;
 
+Session.setDefault('saving', false);
 
 // Reactive data storage for the delete dialog.
 Session.setDefault('songToDelete', {_id: null, title: null});
 
-
-// Store a song to the user database to be retrieved on the next visit.
-var setCurrentSong = function(songId) {
-    id = songId;
-    Meteor.users.update({_id: Meteor.userId()}, {$set: {currentSongId: id}});
-}
-
-
-// Set the id to the user's most recently visited song.
-var loadMostRecentSong = function() {
-    var user = Meteor.users.findOne({_id: Meteor.userId()},
-        {fields: {currentSongId: 1}});
-    if(user) {
-        id = user.currentSongId;
-    }
-}
-
-
-// Attempt to add a new song on the server, and store it's ID as
-// the user's current song if successful.
-var addSong = function(properties) {
-    Meteor.call('newSong', properties, function(error, newSong) {
-        if(error) {
-            console.log(error.reason);
+var song = {
+    
+    // If no argument is provided, returns the id of the current song.
+    // Otherwise sets the current song to the specified id. Pass in NULL
+    // to clear all song data.
+    id: function(songId) {
+        if(songId || songId === null) {
+            Session.set('song_id', songId);
         }
-        else if(newSong) {
-        
-            setCurrentSong(newSong._id);
-            
-            // If a title was passed in...
-            if(properties && properties.hasOwnProperty('title')) {
-                untitled = false;
+        else {
+            return Session.get('song_id');
+        }
+        if(songId) {
+            Meteor.users.update({_id: Meteor.userId()},
+                {$set: {currentSongId: this.id()}}
+            );
+        }
+    },
+
+    // Set the id to the user's most recently visited song.
+    loadMostRecent: function() {
+        var user = Meteor.users.findOne({_id: Meteor.userId()},
+            {fields: {currentSongId: 1}});
+        if(user) {
+            this.id(user.currentSongId);
+        }
+    },
+
+    // Attempt to add a new song on the server, and store it's ID as
+    // the user's current song if successful.
+    add: function(properties) {        
+        var that = this;
+        Meteor.call('newSong', properties, function(error, newSong) {
+            if(error) {
+                console.log(error.reason);
             }
-            else {
-                untitled = true;
+            else if(newSong) {
+                that.id(newSong._id);
+            }
+        });
+    },
+    
+    // Returns a song title, or updates the title if provided.
+    title: function(newTitle) {
+        if(newTitle) {
+            Songs.update({_id: this.id()}, {$set: {title: newTitle}});
+        }
+        else {
+            var songObj = Songs.findOne({_id: this.id()}, {fields: {title: 1}});
+            if(songObj) {
+                return songObj.title;
             }
         }
-    });
+    },
+    
+    // Returns a song's content, or updates the content if provided.
+    content: function(newContent, callback) {
+        if(newContent) {
+    	   Songs.update({_id: song.id()},
+	            {$set: {content: _.escape(newContent)}},
+	            function() { callback(); }
+	        );
+	    }
+        else {
+            songObj = Songs.findOne({_id: this.id()},{fields: {content: 1}});
+            if(songObj) {
+                return _.unescape(songObj.content);
+            }
+        }
+    },
+
 }
-
-
-// Returns a song title, or an empty string if it's untitled.
-var getTitle = function(songId) {
-    var songObj = Songs.findOne({_id: songId}, {fields: {title: 1}});
-    if(songObj && ! untitled) {
-        return songObj.title;
-    }
-    else {
-        return '';
-    }
-}
-
 
 
 // Retrieve the current song ID and title on login or refresh.
@@ -81,36 +102,39 @@ Deps.autorun(function() {
 
     var userId = Meteor.userId();
     
-    if(userId && ! id) {
+    if(userId && ! song.id()) {
         // If there was a song begun before login, add it to the database.
         // Otherwise load the most recent song.
         if(justLoggedIn) {
         
             var titleElement = document.getElementById('song-title'),
-                lyricsElement = document.getElementById('editor'),
+                contentElement = document.getElementById('editor'),
                 newTitle = null,
-                newLyrics = null;
+                newContent = null;
                 
             if(titleElement) {
                 var newTitle = titleElement.value;
             }
             
-            if(lyricsElement) {
-                var newLyrics = lyricsElement.innerHTML;
+            if(contentElement) {
+                var newContent = contentElement.innerHTML;
             }
             
-            if(newTitle || newLyrics) {
-                addSong({title: newTitle, lyrics: newLyrics});
+            if(newTitle || newContent) {
+                song.add({title: newTitle, content: newContent});
             }
             
             justLoggedIn = false;
         }
         
-        loadMostRecentSong();
+        song.loadMostRecent();
     }
-    else if(! userId && id) {
+    else if(! userId && song.id()) {
         // The user just logged out, so remove the current song.
-        id = null;
+        song.id(null);
+        
+        // This is a hack, because the title wasn't re-rendering on logout.
+        //document.getElementById('song-title').value = '';
     }
 });
 
@@ -121,14 +145,19 @@ Deps.autorun(function() {
 
 
 Template.song.songTitle = function() {
-    return getTitle(id);
+    return song.title();
 }
 
-Template.song.songLyrics = function() {
-    if(id) {
-        return _.unescape(
-            Songs.findOne({_id: id},{fields: {lyrics: 1}}).lyrics
-        );
+Template.song.songContent = function() {
+    return song.content();
+}
+
+Template.song.saveIndicator = function() {
+    if(Session.get('saving')) {
+        return 'Saving...';
+    }
+    else {
+        return 'Saved.';
     }
 }
 
@@ -137,26 +166,39 @@ Template.song.events({
     // Store the title on keyup in the input field.
     'change input' : function(e) {
         var newTitle = getUniqueTitle(e.target.value);
-        if(id) {
-		    Songs.update({_id: id}, {$set: {title: newTitle}});
-		    untitled = false;
+        if(song.id()) {
+		    song.title(newTitle);
 		}
 		else {
-		    addSong({title: newTitle});
+		    song.add({title: newTitle});
 		}
     },
 
-    // Store the lyrics on keyup in the editor.
-    'keyup #editor' : function(e) {
+    // Store the content in the editor.
+    'input #editor' : function(e) {
         savedSelection = rangy.saveSelection();
-        if(id) {
-	        Songs.update({_id: id},
-	            {$set: {lyrics: _.escape(e.target.innerHTML)}}
-	        );
-	    }
-	    else {
-	        addSong({lyrics: _.escape(e.target.innerHTML)});
-	    }
+        if(song.id()) {
+        
+            // If "saving..." is not visible, show it.
+            if(! interval) {
+                Session.set('saving', true);
+            }
+
+            // Store the content to database. If successful, check every 3
+            // seconds to see if "saving..." is visible. If it is, turn it off.
+            song.content(e.target.innerHTML, function() {
+                if(! interval) {
+                    interval = Meteor.setInterval(function() {
+                        Session.set('saving', false);
+                        Meteor.clearInterval(interval);
+                        interval = null;
+                    }, 3000);
+                } 
+            });
+        }
+        else {
+            song.add({content: _.escape(e.target.innerHTML)});
+        }
     },
     
     'focus #editor': function() {
@@ -165,19 +207,18 @@ Template.song.events({
     
     'blur #editor': function() {
         editorHasFocus = false;
+    },
+    
+    'click .logInToSave': function() {
+        $('.dropdown-toggle').click();
+        return false;
     }
 });
 
 Template.song.rendered = function() {
-
-    // Restore selection and/or cursor postion when the editor is redrawn.
+    // Restore selection and/or cursor songion when the editor is redrawn.
     if(savedSelection) {
         rangy.restoreSelection(savedSelection);
-    }
-    
-    // Updating the song list causes the editor to lose focus. Refocus it.
-    if(editorHasFocus) {
-        this.find('#editor').focus();
     }
 }
 
@@ -193,7 +234,7 @@ Template.songList.userSongs = function() {
 Template.songList.events({
     // add an empty song when the button is clicked.
     'click .addSong' : function(e) {
-        addSong();
+        song.add();
     },
 });
 
@@ -204,22 +245,22 @@ Template.songList.rendered = function() {
     if(list.length > 0 && ! this.find('.active')) {
         list[list.length-1].click();
     }
-}
-
-Template.songItem.href = function() {
-    return '/' + this._id;
+    
+    // Updating the song list causes the editor to lose focus. Refocus it.
+    if(editorHasFocus) {
+       document.getElementById('editor').focus();
+    }
 }
 
 Template.songItem.songClass = function() {
-    return (id === this._id) ? 'active' : '';
+    return (song.id() === this._id) ? 'active' : '';
 }
 
 Template.songItem.events({
     'click .list-group-item': function(e) {
         e.preventDefault();
         if(! Session.get('songToDelete')._id) {
-            untitled = false;
-            setCurrentSong(this._id);
+            song.id(this._id);
         }
     }
 });
@@ -227,10 +268,7 @@ Template.songItem.events({
 Template.songItem.events({
     // Remove song when the button is clicked.
     'click .close' : function(e) {
-        Session.set('songToDelete', {
-            _id: this._id,
-            title: getTitle(this._id)
-        });
+        Session.set('songToDelete', this);
     }
 });
 
@@ -248,8 +286,8 @@ Template.deleteSongDialog.events({
     // Remove song when the button is clicked.
     'click .removeSong' : function(e) {
         var songId = Session.get('songToDelete')._id;
-        if(songId === id) {
-            setCurrentSong(null);
+        if(songId === song.id()) {
+            song.id(null);
         }
         Songs.remove(songId);
         Session.set('songToDelete', {_id: null, title: 'this song'});

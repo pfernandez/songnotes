@@ -1,4 +1,5 @@
-/* CSS declarations go here */
+
+@lightGray: #888;
 
 .sign-in-up {
     list-style-type: none;
@@ -23,5 +24,17 @@ aside {
 
 [contenteditable=true]:empty:before {
     content: attr(data-placeholder);
-    color: #888;
+    color: @lightGray;
+}
+
+.soft-text {
+    color: @lightGray;
+}
+
+.active .soft-text {
+    color: #ccc;
+}
+
+.save-indicator {
+    margin: 30px 0 0 0;
 }

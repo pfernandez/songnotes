@@ -1,0 +1,28 @@
+<template name="songList">
+    {{#if currentUser}}
+        {{#if userSongs}}
+            <div class="list-group">
+                {{#each userSongs}}
+                    {{> songItem}}
+                {{/each}}
+            </div>
+            <button type="button" class="addSong btn btn-default">
+                <span class="glyphicon glyphicon-plus"></span> New song
+            </button>
+        {{/if}}
+    {{/if}}
+</template>
+
+<template name="songItem">
+    <a href="/{{_id}}" class="list-group-item toggle in clearfix {{songClass}}">
+        {{#if title}}
+            {{title}}
+        {{else}}
+            <span class="soft-text">(untitled)</span>
+        {{/if}}
+        <button type="button" class="close pull-right"
+            data-toggle="modal" data-target="#deleteSongModal">
+            &times;
+        </button>
+    </a>
+</template>

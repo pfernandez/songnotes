@@ -25,5 +25,12 @@
 </template>
 
 <template name="deleteSongDialogBody">
-    <p>Are you sure you want to delete {{deleteSongTitle}}?</p>
+    <p>
+        Are you sure you want to delete 
+        {{#if deleteSongTitle}}
+            {{deleteSongTitle}}?
+        {{else}}
+            (untitled)?
+        {{/if}}
+    </p>
 </template>

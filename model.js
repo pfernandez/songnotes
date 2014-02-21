@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////////
-// Songs: { title, lyrics, ownerId }
+// Songs: { title, content, ownerId }
 
 Songs = new Meteor.Collection('songs');
 
@@ -22,7 +22,7 @@ Songs.allow({
 Songs.deny({
     update: function(userId, docs, fields, modifier) {
         // The user may only edit particular fields.
-        return (_.without(fields, 'title', 'lyrics').length > 0);
+        return (_.without(fields, 'title', 'content').length > 0);
     }
 });
 
@@ -39,14 +39,19 @@ Meteor.methods({
                 properties = {};
             }
             
-            properties.title = getUniqueTitle(properties.title);
+            if(properties.title) {
+                properties.title = getUniqueTitle(properties.title);
+            }
+            else {
+                properties.title = '';
+            }
             
-            if(! properties.lyrics) {
-                properties.lyrics = '';
+            if(! properties.content) {
+                properties.content = '';
             }
         
             // Make sure only allowed properties are inserted.
-            var song = _.extend(_.pick(properties, 'title', 'lyrics'), {
+            var song = _.extend(_.pick(properties, 'title', 'content'), {
                 ownerId: user, created: new Date().getTime()
             });
 
@@ -59,34 +64,46 @@ Meteor.methods({
 
 // Returns a cursor of songs belonging to the specified user.
 getSongList = function(userId) {
-    return Songs.find({ownerId: userId}, {fields: {title: 1}});
+    var songList = Songs.find({ownerId: userId},
+        {fields: {title: 1}}, {sort: {_id: -1}});
+    if(songList.count() > 0) {
+        return songList;
+    }
+    else {
+        return null;
+    }
 }
 
 // If the desired title is not unique, append and integer to it.
 getUniqueTitle = function(title) {
 
-    if(! title) {
-        title = 'Untitled Song';
-    }
-
-    var songs = getSongList(Meteor.userId()).fetch(),
+    var songList = getSongList(Meteor.userId());
+    
+    if(songList) {
+    
+        if(! title) {
+            title = 'Untitled Song';
+        }
+        
+        var songs = songList.fetch(),
         newTitle = title,
         matchFound = true,
         count = 1;
-    
-    while(matchFound) {
-        matchFound = false;
-        for(var i = 0; i < songs.length; i++) {
-            if(newTitle === songs[i].title) {
-                newTitle = title + ' ' + count;
-                matchFound = true;
-                count++;
+        
+        while(matchFound) {
+            matchFound = false;
+            for(var i = 0; i < songs.length; i++) {
+                if(newTitle === songs[i].title) {
+                    newTitle = title + ' ' + count;
+                    matchFound = true;
+                    count++;
+                }
             }
         }
-    }
-    
-    if(count > 1) {
-        title = newTitle;
+        
+        if(count > 1) {
+            title = newTitle;
+        }
     }
     
     return title;
