@@ -1,0 +1,25 @@
+<template name="recordings">
+    {{#if currentUser}}
+        {{#if songRecordings}}
+            <div class="list-group">
+                {{#each songRecordings}}
+                    {{> recordingItem}}
+                {{/each}}
+            </div>
+        {{/if}}
+    {{/if}}
+</template>
+
+<template name="recordingItem">
+    <a href="#" class="list-group-item toggle in clearfix {{songClass}}">
+        {{#if title}}
+            {{title}}
+        {{else}}
+            <span class="soft-text">(untitled)</span>
+        {{/if}}
+        <button type="button" class="close pull-right"
+            data-toggle="modal" data-target="#deleteSongModal">
+            &times;
+        </button>
+    </a>
+</template>

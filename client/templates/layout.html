@@ -29,8 +29,12 @@
 
     <div class="container-fluid">
         <div class="row">
-            <aside id="songList" class="col-md-3">{{yield 'aside'}}</aside>
-            <article id="song" class="col-md-6">{{yield}}</article>
+            <aside id="songList" class="col-md-3">{{yield 'songList'}}</aside>
+            <article id="song" class="col-md-6">
+                {{yield 'controls'}}
+                {{yield}}
+            </article>
+            <aside id="recordings" class="col-md-3">{{yield 'recordings'}}</aside>
         </div>
     </div>
     

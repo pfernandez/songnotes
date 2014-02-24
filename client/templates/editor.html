@@ -1,0 +1,15 @@
+<template name="editor">
+
+    <div id="editor-panel" class="panel panel-default">
+        <div tabindex="2" data-placeholder="Type some content..." 
+            id="content" class="panel-body" contenteditable="true"
+            >{{#if currentUser}}{{{songContent}}}{{/if}}</div>
+    </div>
+
+    {{#unless currentUser}}
+        <button type="button" class="logInToSave pull-right btn btn-default">
+            Log in to save
+        </button>
+    {{/unless}}
+
+</template>
