@@ -25,15 +25,19 @@ Template.controls.events({
 		}
     },
     
-    'click #record' : function() {
+    'click .record' : function() {
         audio.record();
     },
     
-    'click #stop' : function() {
+    'click .stop' : function() {
         audio.stop();
     },
     
-    'click #play' : function() {
+    'click .play' : function() {
         audio.play();
+    },
+    
+    'click .loop' : function() {
+        audio.loop();
     }
 });

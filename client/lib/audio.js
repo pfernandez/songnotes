@@ -54,7 +54,7 @@ audio = function() {
                     audioRecorder.record();
                 });
             }
-            else if(! recording) {
+            else if(! recording && ! playing) {
                 recording = true;
                 audioRecorder.clear();
                 audioRecorder.record();
@@ -72,7 +72,7 @@ audio = function() {
             }
         },
     
-        play: function() {
+        play: function(loop) {
             if(recording) {
                 audioRecorder.stop();
                 recording = false;
@@ -88,11 +88,16 @@ audio = function() {
                     source.buffer = buffer;
                     source.connect(audioContext.destination);
                     source.start(0);
+                    source.loop = loop || false;
                     source.onended = function() {
                         playing = false;
                     }
                 });
             }
+        },
+        
+        loop: function() {
+            this.play(true);
         },
 
         download: function() {

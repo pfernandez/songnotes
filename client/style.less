@@ -1,13 +1,23 @@
 
-@lightGray: #888;
+@lightGray: #bababa;
+
+
+html,
+body,
+.row,
+article,
+aside {
+    height: 100%;
+}
+
+.app-container {
+    /* (window - header) */
+    height: ~"calc(100% - 71px)";
+}
 
 .sign-in-up {
     list-style-type: none;
     margin-top: 32px
-}
-
-.header-separator {
-    margin-bottom: 36px;
 }
 
 aside {
@@ -15,11 +25,13 @@ aside {
 }
 
 #editor-panel {
+    /* (window - header - controls - bottom) */
+    height: ~"calc(100% - 71px - 100px)";
     margin-top: 1em;
 }
 
 #content {
-    min-height: 20em;
+    height: 100%;
 }
 
 [contenteditable=true]:empty:before {
@@ -32,9 +44,13 @@ aside {
 }
 
 .active .soft-text {
-    color: #ccc;
+    color: #eee;
+}
+
+.control-buttons {
+    margin: 20px 0 0 0;
 }
 
 .save-indicator {
-    margin: 30px 0 0 0;
+    margin: 5px 0 0 0;
 }

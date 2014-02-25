@@ -1,5 +1,6 @@
 <template name="songList">
     {{#if currentUser}}
+        <h2>Songs</h2>
         {{#if userSongs}}
             <div class="list-group">
                 {{#each userSongs}}
@@ -10,6 +11,26 @@
                 <span class="glyphicon glyphicon-plus"></span> New song
             </button>
         {{/if}}
+    {{else}}
+        <h2>
+            Songnotes is a minimalist web tool for recording ideas, 
+            sketching lyrics and keeping track of chords.
+        </h2>
+        <h3>Benefits</h3>
+        <ul>
+            <li>Makes capturing ideas quick</li>
+            <li>Easily accessed on any device
+            <li>Helps get your song dialed before committing to a recording 
+                process</li>
+        </ul>
+        <h3>Features</h3>
+        <ul>
+            <li>Keeps track of lyrics and chords, and melody lines</li>
+            <li>Print and download files</li>
+            <li>Auto-save</li>
+            <li>Minimalist interface</li>
+            <li>Works on mobile, tablet or desktop</li>
+        </ul>
     {{/if}}
 </template>
 

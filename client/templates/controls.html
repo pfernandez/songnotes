@@ -1,15 +1,18 @@
 <template name="controls">
     <div id="controls" class="clearfix">
     
-        <div class="pull-left input-group input-group-lg">
+        <h2 class="pull-left input-group input-group-lg">
             <input type="text" tabindex="1" class="form-control"
                 id="song-title" placeholder="Enter a title"
                 {{#if currentUser}}value="{{songTitle}}"{{/if}}>
-        </div>
+        </h2>
         
-        <button id="record" type="button">Record</button>
-        <button id="stop" type="button">Stop</button>
-	    <button id="play" type="button">Play</button>
+        <div class="control-buttons pull-right">
+            <button type="button" class="record btn btn-sm">Record</button>
+            <button type="button" class="stop btn btn-sm">Stop</button>
+	        <button type="button" class="play btn btn-sm">Play</button>
+	        <button type="button" class="loop btn btn-sm">Loop</button>
+	    <div>
 	    
         <p class="save-indicator pull-right soft-text">
             {{#if currentUser}}
