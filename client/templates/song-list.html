@@ -1,49 +1,54 @@
 <template name="songList">
+
     {{#if currentUser}}
+
         <h2>Songs</h2>
+
         {{#if userSongs}}
             <div class="list-group">
                 {{#each userSongs}}
                     {{> songItem}}
                 {{/each}}
             </div>
-            <button type="button" class="addSong btn btn-default">
-                <span class="glyphicon glyphicon-plus"></span> New song
-            </button>
-        {{/if}}
+        {{/if}}  
+
+        <button type="button" class="addSong btn btn-default">
+            <span class="glyphicon glyphicon-plus"></span> New song
+        </button>
+
     {{else}}
+
         <h2>
             Songnotes is a minimalist web tool for recording ideas, 
             sketching lyrics and keeping track of chords.
         </h2>
-        <h3>Benefits</h3>
-        <ul>
-            <li>Makes capturing ideas quick</li>
-            <li>Easily accessed on any device
-            <li>Helps get your song dialed before committing to a recording 
-                process</li>
-        </ul>
+
         <h3>Features</h3>
+
         <ul>
-            <li>Keeps track of lyrics and chords, and melody lines</li>
+            <li>Capture your ideas quickly, while they're fresh</li>
+            <li>Keep track of lyrics, chords, and melody lines in one place</li>
             <li>Print and download files</li>
-            <li>Auto-save</li>
-            <li>Minimalist interface</li>
-            <li>Works on mobile, tablet or desktop</li>
+            <li>Autosaves so you'll never lose your work</li>
+            <li>Works on mobile, tablet or desktop in Chome, Fireox, and Opera</li>
         </ul>
+
     {{/if}}
 </template>
 
 <template name="songItem">
     <a href="/{{_id}}" class="list-group-item toggle in clearfix {{songClass}}">
+
         {{#if title}}
             {{title}}
         {{else}}
             <span class="soft-text">(untitled)</span>
         {{/if}}
+
         <button type="button" class="close pull-right"
-            data-toggle="modal" data-target="#deleteSongModal">
+            data-toggle="modal" data-target="#deleteModal">
             &times;
         </button>
+
     </a>
 </template>

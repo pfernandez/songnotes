@@ -1,0 +1,44 @@
+<template name="audio">
+           
+    <menu class="control-buttons">
+        <h2>
+            <button type="button" class="record-stop btn btn-sm btn-danger">
+                Record
+            </button>
+            Audio
+        </h2>
+    <menu>
+    {{#if sounds}}
+        <ul class="list-group">
+            {{#each sounds}}
+                {{> sound}}
+            {{/each}}
+        </ul>
+    {{else}}
+        <p class="soft-text">
+            New recordings will show up here.
+        </p>
+    {{/if}}
+</template>
+
+<template name="sound">
+    <li class="list-group-item toggle in clearfix {{songClass}}">
+        <button type="button" class="btn btn-xs btn-link">
+            <span class="play-pause glyphicon glyphicon-play"></span>
+        </button>
+        <button type="button" class="btn btn-xs btn-link">
+            <span class="loop glyphicon glyphicon-repeat"></span>
+        </button>
+        <audio id="{{_id}}" src="{{blobURL}}"></audio>
+        {{#if title}}
+            {{title}}
+        {{else}}
+            <input class="sound-title" autocomplete="off"
+                placeholder="(untitled)">
+        {{/if}}
+        <button type="button" class="close pull-right"
+            data-toggle="modal" data-target="#deleteSongModal">
+            &times;
+        </button>
+    </li>
+</template>

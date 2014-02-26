@@ -2,36 +2,60 @@
 @lightGray: #bababa;
 
 
-html,
-body,
-.row,
-article,
-aside {
-    height: 100%;
+#title-bar {
+    position: relative;
 }
 
-.app-container {
-    /* (window - header) */
-    height: ~"calc(100% - 71px)";
+#editor {
+    /* (editor - bottom) */
+    height: ~"calc(100% - 70px)";
+    min-height: 20em;
+}
+
+.save-indicator {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    margin: 0 20px;
+}
+
+#audio h2 {
+    margin-top: 0;
+}
+
+menu button,
+menu input {
+    outline: none !important;
+}
+
+menu {
+    padding: 0;
+}
+
+menu input {
+    border: none;
+    max-width: 60%;
+}
+
+.record-stop {
+	width: 64px;
+	height: 64px;
+	margin: 0;
+    border-radius: 50%;
+    font-weight: bold;
+    transition: all 0.005s ease-in-out;
+}
+
+.recording {
+    height: 50px;
+    width: 50px;
+    margin: 7px;
+    border-radius: 3px;
 }
 
 .sign-in-up {
     list-style-type: none;
     margin-top: 32px
-}
-
-aside {
-    padding-bottom: 20px;
-}
-
-#editor-panel {
-    /* (window - header - controls - bottom) */
-    height: ~"calc(100% - 71px - 100px)";
-    margin-top: 1em;
-}
-
-#content {
-    height: 100%;
 }
 
 [contenteditable=true]:empty:before {
@@ -47,10 +71,23 @@ aside {
     color: #eee;
 }
 
-.control-buttons {
-    margin: 20px 0 0 0;
-}
 
-.save-indicator {
-    margin: 5px 0 0 0;
+@media all and (min-width: 992px) {
+
+    html,
+    body,
+    .full-height {
+        height: 100%;
+    }
+
+    #app-container {
+        /* (window - navbar) */
+        height: ~"calc(100% - 71px)";
+    }
+
+    #song-content {
+        /* (container - titlebar) */
+        height: ~"calc(100% - 90px)";
+        margin-top: 1em;
+    }
 }

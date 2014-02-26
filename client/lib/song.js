@@ -4,6 +4,7 @@ song = {
     // Otherwise sets the current song to the specified id. Pass in NULL
     // to clear all song data.
     id: function(songId) {
+        
         if(songId || songId === null) {
             Session.set('song_id', songId);
         }
@@ -11,6 +12,7 @@ song = {
             return Session.get('song_id');
         }
         if(songId) {
+            Session.set('song_id', songId);
             Meteor.users.update({_id: Meteor.userId()},
                 {$set: {currentSongId: this.id()}}
             );
@@ -62,22 +64,13 @@ song = {
 	        );
 	    }
         else {
-            songObj = Songs.findOne({_id: this.id()},{fields: {content: 1}});
+            songObj = Songs.findOne({_id: this.id()}, {
+                fields: {content: 1},
+                reactive: false
+            });
             if(songObj) {
                 return _.unescape(songObj.content);
             }
-        }
-    },
-
-    recordingsList: function() {
-        var result = Songs.find({_id: this.id()},
-            {fields: {recordingTitle: 1}});
-        if(result.count() > 0) {
-            console.log(result.fetch());
-            return result;
-        }
-        else {
-            return null;
         }
     }
 }

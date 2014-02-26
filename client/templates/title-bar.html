@@ -1,0 +1,15 @@
+<template name="titleBar">
+    <div class="clearfix">
+        <h2 class="input-group input-group-lg">
+            <input type="text" tabindex="1" class="form-control"
+                id="song-title" autocomplete="off" placeholder="Enter a title"
+                {{#if currentUser}}value="{{songTitle}}"{{/if}}>
+        </h2>
+        
+        <p class="save-indicator pull-right soft-text">
+            {{#if currentUser}}
+                {{#isolate}}{{saveIndicator}}{{/isolate}}
+            {{/if}}
+        </p>
+    </div>
+</template>

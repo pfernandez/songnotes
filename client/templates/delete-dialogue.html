@@ -1,6 +1,6 @@
-<template name="deleteSongDialog">
-    <div  id="deleteSongModal" class="modal fade">
-      <div class="modal-dialog">
+<template name="deleteDialog">
+    <div  id="deleteModal" class="modal fade">
+      <div class="modal-dialog modal-sm">
         <div class="modal-content">
           <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal"
@@ -8,13 +8,13 @@
             <h4 class="modal-title">Delete Song</h4>
           </div>
           <div class="modal-body">
-            {{> deleteSongDialogBody}}
+            {{> deleteDialogBody}}
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-default" data-dismiss="modal">
                 Cancel
             </button>
-            <button type="button" class="removeSong btn btn-primary"
+            <button type="button" class="remove btn btn-primary"
                 data-dismiss="modal">
                 Delete
             </button>
@@ -24,11 +24,11 @@
     </div><!-- /.modal -->
 </template>
 
-<template name="deleteSongDialogBody">
+<template name="deleteDialogBody">
     <p>
         Are you sure you want to delete 
-        {{#if deleteSongTitle}}
-            {{deleteSongTitle}}?
+        {{#if title}}
+            {{title}}?
         {{else}}
             (untitled)?
         {{/if}}

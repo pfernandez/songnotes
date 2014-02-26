@@ -1,5 +1,4 @@
 
-
 Template.songList.userSongs = function() {
     return getSongList(Meteor.userId());
 }
@@ -32,7 +31,7 @@ Template.songItem.songClass = function() {
 Template.songItem.events({
     'click .list-group-item': function(e) {
         e.preventDefault();
-        if(! Session.get('songToDelete')._id) {
+        if(! Session.get('delete_dialogue')._id) {
             song.id(this._id);
         }
     }
@@ -41,6 +40,6 @@ Template.songItem.events({
 Template.songItem.events({
     // Remove song when the button is clicked.
     'click .close' : function(e) {
-        Session.set('songToDelete', this);
+        Session.set('delete_dialogue', this);
     }
 });

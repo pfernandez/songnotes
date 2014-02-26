@@ -74,7 +74,7 @@ getSongList = function(userId) {
     }
 }
 
-// If the desired title is not unique, append and integer to it.
+// If the desired title is not unique, append an integer to it.
 getUniqueTitle = function(title) {
 
     var songList = getSongList(Meteor.userId());
@@ -110,6 +110,82 @@ getUniqueTitle = function(title) {
 }
 
 
+////////////////////////////////////////////////////////////////////////////////
+// Meteor.users: { currentSong }
+
+Sounds = new Meteor.Collection('sounds');
+
+Sounds.allow({
+    insert: function(userId, doc) {
+        // Users must be logged in, and the document must be owned by the user.
+        return (userId && doc.ownerId === userId);
+    },
+    update: function(userId, doc, fields, modifier) {
+        // Users can only edit their own documents.
+        return doc.ownerId === userId;
+    },
+    remove: function(userId, doc) {
+        // Users can only remove their own documents.
+        return doc.ownerId === userId;
+    },
+    fetch: ['ownerId']
+});
+
+Sounds.deny({
+    update: function(userId, docs, fields, modifier) {
+        // The user may only edit particular fields.
+        return (_.without(fields, 'title', 'blob').length > 0);
+    }
+});
+
+Meteor.methods({
+
+    // Insert a new song into the database.
+    newSound: function(properties) {
+    
+        var user = Meteor.userId();
+//{name: undefined, type: "audio/wav", size: 409644, file: Uint8Array[409644]}    
+        if(user) {
+        
+            if(! properties) {
+                properties = {};
+            }
+            
+            if(! properties.title) {
+                properties.title = '';
+            }
+            
+            if(! properties.songId) {
+                throw new Error('Could not store sound: no song ID.');
+            }
+            
+            if(! properties.type) {
+                throw new Error('Could not store sound: no type specified.');
+            }
+            
+            if(! properties.file) {
+                throw new Error('Could not store sound: no file provided.');
+            }
+        
+            // Make sure only allowed properties are inserted.
+            var sound = _.extend(
+                _.pick(properties, 'songId', 'title', 'type', 'file'), {
+                    ownerId : user,
+                    songId  : properties.songId,
+                    title   : properties.title,
+                    type    : properties.type,
+                    file    : properties.file,
+                    created : new Date().getTime(),
+                }
+            );
+
+            properties._id = Sounds.insert(sound);
+           // console.log(properties);
+            return properties;
+        }
+    },
+});
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // Meteor.users: { currentSong }
@@ -120,3 +196,4 @@ Meteor.users.allow({
         return (fields.length === 1 && _.contains(fields, 'currentSongId'));
     }
 });
+

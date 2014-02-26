@@ -7,13 +7,13 @@ audio = function() {
         playing,
         recording = null;
 
-    function init() {
+    var init = function() {
         window.AudioContext = window.AudioContext || window.webkitAudioContext;
         audioContext = new AudioContext();
         return methods;
     }
     
-    function initGetUserMedia(callback) {
+    var initGetUserMedia = function(callback) {
 
         navigator.getMedia = (navigator.getUserMedia ||
                            navigator.webkitGetUserMedia ||
@@ -42,6 +42,56 @@ audio = function() {
             }
         );
     }
+    
+    var BinaryFileReader = {
+      read: function(file, callback){
+        var reader = new FileReader;
+
+        var fileInfo = {
+          type: file.type,
+          size: file.size,
+          file: null
+        }
+
+        reader.onload = function(){
+          fileInfo.file = new Uint8Array(reader.result);
+          callback(null, fileInfo);
+        }
+        reader.onerror = function(){
+          callback(reader.error);
+        }
+
+        reader.readAsArrayBuffer(file);
+      }
+    }
+    
+    var blobReady = function(callback) {
+        audioRecorder.getBuffer(function(buffers) {
+            audioRecorder.exportWAV(function(blob) {
+                callback(blob);
+            });
+        });
+    }
+    
+    // Attempt to add a new sound to the server. Returns unique sound ID
+    // if successful.
+    var save = function(properties) {
+        audioRecorder.exportWAV(function(blob) {
+            BinaryFileReader.read(blob, function(err, fileInfo) {
+                _.extend(properties, fileInfo);
+                Meteor.call('newSound', properties, function(error, newSound) {
+                    if(error) {
+                        console.log(error.reason);
+                    }
+                });
+            });
+        });
+    }
+    
+    var stopRecording = function() {
+        audioRecorder.stop();
+        recording = false;
+    }
 
     var methods = {
     
@@ -63,8 +113,10 @@ audio = function() {
         
         stop: function() {
             if(recording) {
-                audioRecorder.stop();
-                recording = false;
+                stopRecording();
+                blobReady(function(blob) {
+                    save({songId: song.id(), 'blob': blob});
+                });
             }
             else if(playing){
                 source.stop();
@@ -74,8 +126,7 @@ audio = function() {
     
         play: function(loop) {
             if(recording) {
-                audioRecorder.stop();
-                recording = false;
+                stopRecording();
             }
             if(! playing && recording !== null) {
                 playing = true;
@@ -101,13 +152,20 @@ audio = function() {
         },
 
         download: function() {
-            audioRecorder.getBuffer(function(buffers) {
-                audioRecorder.exportWAV(function(blob) {
-                    Recorder.forceDownload(blob);
-                });
+            blobReady(function(blob) {
+                Recorder.forceDownload(blob);
             });
         },
-
+        
+        list: function() {
+            var result = Sounds.find({'songId': song.id()});
+            if(result.count() > 0) {
+                return result;
+            }
+            else {
+                return null;
+            }
+        }
     }
     
     return init();

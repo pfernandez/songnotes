@@ -14,7 +14,7 @@
 
 <template name="layout">
 
-    {{yield 'deleteSongDialog'}}
+    {{yield 'deleteDialog'}}
     
     <div class="navbar navbar-default navbar-static-top" role="navigation">
         <div class="container-fluid">
@@ -27,14 +27,31 @@
         </div>
     </div>
 
-    <div class="app-container container-fluid">
-        <div class="row">
-            <aside id="songList" class="col-md-3">{{yield 'songList'}}</aside>
-            <article id="song" class="col-md-6">
-                {{yield 'controls'}}
-                {{yield}}
-            </article>
-            <aside id="recordings" class="col-md-3">{{yield 'recordings'}}</aside>
+    <div id="app-container" class="container-fluid">
+        <div class="row full-height">
+        
+            <nav id="song-list" class="col-md-3 full-height">
+                {{yield 'songList'}}
+            </nav>
+            
+            <div class="col-md-9 full-height">
+            
+                <div class="row">
+                    <header id="title-bar" class="col-md-8">
+                        {{yield 'titleBar'}}
+                    </header>
+                </div>
+                
+                <div id="song-content" class="row">
+                    <div class="col-md-8 full-height">
+                        {{yield}}
+                    </div>
+                    <aside id="audio" class="col-md-4 full-height">
+                        {{yield 'audio'}}
+                    </aside>
+                </div>
+                
+            </div>
         </div>
     </div>
     
