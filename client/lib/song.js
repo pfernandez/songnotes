@@ -4,7 +4,6 @@ song = {
     // Otherwise sets the current song to the specified id. Pass in NULL
     // to clear all song data.
     id: function(songId) {
-        
         if(songId || songId === null) {
             Session.set('song_id', songId);
         }
@@ -12,7 +11,6 @@ song = {
             return Session.get('song_id');
         }
         if(songId) {
-            Session.set('song_id', songId);
             Meteor.users.update({_id: Meteor.userId()},
                 {$set: {currentSongId: this.id()}}
             );

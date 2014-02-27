@@ -2,20 +2,25 @@
 
     {{#if currentUser}}
 
-        <h2>Songs</h2>
-
-        {{#if userSongs}}
-            <div class="list-group">
-                {{#each userSongs}}
-                    {{> songItem}}
-                {{/each}}
-            </div>
-        {{/if}}  
-
-        <button type="button" class="addSong btn btn-default">
-            <span class="glyphicon glyphicon-plus"></span> New song
+        <button type="button" class="collapse-btn btn btn-link"
+            data-toggle="collapse" data-target="#toggle-songs">
+            <h2>Songs </h2><span class="collapse-icon
+                glyphicon glyphicon-chevron-down"></span>
         </button>
-
+        
+        <div id="toggle-songs" class="mobile-collapse collapse">
+            {{#if userSongs}}
+                <div class="list-group">
+                    {{#each userSongs}}
+                        {{> songItem}}
+                    {{/each}}
+                </div>
+            {{/if}}
+            <button type="button" class="addSong btn btn-default">
+                <span class="glyphicon glyphicon-plus"></span> New song
+            </button>
+        </div>
+        
     {{else}}
 
         <h2>

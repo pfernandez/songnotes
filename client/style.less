@@ -1,9 +1,13 @@
 
 @lightGray: #bababa;
 
+.navbar .dropdown-toggle {
+    padding: 15px;
+}
 
 #title-bar {
     position: relative;
+    margin: 15px 0 10px 0;
 }
 
 #editor {
@@ -23,18 +27,44 @@
     margin-top: 0;
 }
 
-menu button,
+.btn-link,
 menu input {
     outline: none !important;
 }
 
 menu {
+    margin: 0;
     padding: 0;
 }
 
 menu input {
     border: none;
     max-width: 60%;
+}
+
+.not-btn,
+.not-btn:hover,
+.not-btn:focus {
+    color: inherit;
+    text-decoration: none;
+    cursor: inherit;
+}
+
+.collapse-btn {
+    padding: 0;
+}
+
+.collapse-btn h2 {
+    display: inline-block;
+}
+
+.song-title,
+.record-stop {
+    float: left;
+}
+
+.song-title {
+    padding: 10px 20px 0 0;
 }
 
 .record-stop {
@@ -51,6 +81,10 @@ menu input {
     width: 50px;
     margin: 7px;
     border-radius: 3px;
+}
+
+.panel-body {
+    height: 100%;
 }
 
 .sign-in-up {
@@ -82,12 +116,20 @@ menu input {
 
     #app-container {
         /* (window - navbar) */
-        height: ~"calc(100% - 71px)";
+        height: ~"calc(100% - 114px)";
     }
 
     #song-content {
         /* (container - titlebar) */
         height: ~"calc(100% - 90px)";
         margin-top: 1em;
+    }
+    
+    #title-bar {
+        margin: 55px 0 0 0;
+    }
+    
+    #audio {
+        margin-top: -43px;
     }
 }

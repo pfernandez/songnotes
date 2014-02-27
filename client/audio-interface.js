@@ -3,22 +3,6 @@ Template.audio.sounds = function() {
     return song.recordingsList();
 }
 
-Template.audio.events({
-    
-    'click .record-stop' : function(e) {
-        var target = e.target;
-        if(target.classList.contains('recording')) {
-            audio.stop();
-            target.textContent = 'Record';
-        }
-        else {
-            audio.record();
-            target.textContent = 'Stop';
-        }
-        target.classList.toggle('recording');
-    }
-});
-
 Template.audio.sounds = function() {
     return audio.list();
 }

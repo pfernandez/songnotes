@@ -1,24 +1,21 @@
-<template name="audio">
-           
-    <menu class="control-buttons">
-        <h2>
-            <button type="button" class="record-stop btn btn-sm btn-danger">
-                Record
-            </button>
-            Audio
-        </h2>
+<template name="audio">   
     <menu>
-    {{#if sounds}}
-        <ul class="list-group">
-            {{#each sounds}}
-                {{> sound}}
-            {{/each}}
-        </ul>
-    {{else}}
-        <p class="soft-text">
-            New recordings will show up here.
-        </p>
-    {{/if}}
+        
+        <h2>Audio</h2>
+    
+        {{#if sounds}}
+            <ul class="list-group">
+                {{#each sounds}}
+                    {{> sound}}
+                {{/each}}
+            </ul>
+        {{else}}
+            <p class="soft-text">
+                New recordings will show up here.
+            </p>
+        {{/if}}
+    
+    </menu>
 </template>
 
 <template name="sound">

@@ -7,7 +7,7 @@ lib/ but before any other client directories.
 // Client global variables
 contentHasFocus = false; // for returning focus to content on hot reload
 Session.setDefault('saving', false);
-Session.set('delete_dialogue', {_id: null, title: ''});
+Session.set('delete_dialog', {_id: null, title: ''});
 Session.setDefault('blob_url', ''); // last recorded audio url
 
 var justLoggedIn = false;   // so we can store an entered song on login
@@ -57,3 +57,34 @@ Deps.autorun(function() {
         //document.getElementById('song-title').value = '';
     }
 });
+
+
+// Display song lists as either full or collapsed depending on window width.
+var toggleLists = function() {
+    var buttons = document.getElementsByClassName('collapse-btn'),
+        lists = document.getElementsByClassName('mobile-collapse'),
+        icons = document.getElementsByClassName('collapse-icon');
+        
+    if(window.innerWidth > 991) {
+        for(var i = 0; i < lists.length; i++) {
+            buttons[i].dataset['toggle'] = '';
+            if(! buttons[i].classList.contains('not-btn')) {
+                buttons[i].classList.add('not-btn');
+            }
+            lists[i].classList.remove('collapse');
+            icons[i].classList.remove('glyphicon-chevron-down');
+        }
+    }
+    else {
+        for(var i = 0; i < lists.length; i++) {
+            buttons[i].dataset['toggle'] = 'collapse';
+            buttons[i].classList.remove('not-btn');
+            if(! lists[i].classList.contains('collapse')) {
+                lists[i].classList.add('collapse');
+                icons[i].classList.add('glyphicon-chevron-down');
+            }
+        }
+    }
+}
+window.onload = function() { toggleLists(); }
+window.onresize = function() { toggleLists(); }

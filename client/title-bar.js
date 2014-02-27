@@ -23,5 +23,18 @@ Template.titleBar.events({
 		else {
 		    song.add({title: newTitle});
 		}
+    },
+    
+    'click .record-stop' : function(e) {
+        var target = e.target;
+        if(target.classList.contains('recording')) {
+            audio.stop();
+            target.textContent = 'Record';
+        }
+        else {
+            audio.record();
+            target.textContent = 'Stop';
+        }
+        target.classList.toggle('recording');
     }
 });
