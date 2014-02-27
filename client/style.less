@@ -5,9 +5,13 @@
     padding: 15px;
 }
 
+#song-list h2 {
+    margin-top: 10px;
+}
+
 #title-bar {
     position: relative;
-    margin: 15px 0 10px 0;
+    margin: 15px 0 20px 0;
 }
 
 #editor {
@@ -18,16 +22,13 @@
 
 .save-indicator {
     position: absolute;
-    bottom: 0;
+    bottom: -5px;
     right: 0;
     margin: 0 20px;
 }
 
-#audio h2 {
-    margin-top: 0;
-}
-
 .btn-link,
+menu button,
 menu input {
     outline: none !important;
 }
@@ -58,28 +59,25 @@ menu input {
     display: inline-block;
 }
 
-.song-title,
+#audio h2,
 .record-stop {
-    float: left;
+    display: inline-block;
 }
 
-.song-title {
-    padding: 10px 20px 0 0;
+#audio h2 {
+    margin-top: 0;
 }
 
 .record-stop {
 	width: 64px;
 	height: 64px;
-	margin: 0;
+	margin: 0 5px 10px 0;
     border-radius: 50%;
     font-weight: bold;
     transition: all 0.005s ease-in-out;
 }
 
 .recording {
-    height: 50px;
-    width: 50px;
-    margin: 7px;
     border-radius: 3px;
 }
 
@@ -127,9 +125,5 @@ menu input {
     
     #title-bar {
         margin: 55px 0 0 0;
-    }
-    
-    #audio {
-        margin-top: -43px;
     }
 }

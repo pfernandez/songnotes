@@ -60,7 +60,8 @@ Deps.autorun(function() {
 
 
 // Display song lists as either full or collapsed depending on window width.
-var toggleLists = function() {
+toggleLists = function() {
+
     var buttons = document.getElementsByClassName('collapse-btn'),
         lists = document.getElementsByClassName('mobile-collapse'),
         icons = document.getElementsByClassName('collapse-icon');
@@ -86,5 +87,4 @@ var toggleLists = function() {
         }
     }
 }
-window.onload = function() { toggleLists(); }
 window.onresize = function() { toggleLists(); }

@@ -12,6 +12,8 @@ Template.songList.events({
 
 Template.songList.rendered = function() {
 
+    toggleLists();
+
     // If the user has any songs, make sure one is always current.
     var list = this.findAll('.list-group-item');
     if(list.length > 0 && ! this.find('.active')) {

@@ -6,15 +6,12 @@
                 id="song-title" autocomplete="off" placeholder="Enter a title"
                 {{#if currentUser}}value="{{songTitle}}"{{/if}}>
         </div>
-        
-        <button type="button" class="record-stop btn btn-sm btn-danger">
-            Record
-        </button>
-        
+                
         <p class="save-indicator soft-text">
             {{#if currentUser}}
                 {{#isolate}}{{saveIndicator}}{{/isolate}}
             {{/if}}
         </p>
+        
     </div>
 </template>

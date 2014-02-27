@@ -7,7 +7,20 @@ Template.audio.sounds = function() {
     return audio.list();
 }
 
-
+Template.audio.events({
+    'click .record-stop' : function(e) {
+        var target = e.target;
+        if(target.classList.contains('recording')) {
+            audio.stop();
+            target.textContent = 'Record';
+        }
+        else {
+            audio.record();
+            target.textContent = 'Stop';
+        }
+        target.classList.toggle('recording');
+    }
+});
 
 Template.sound.title = function() {
     var result = Sounds.findOne({_id: this._id}, {fields: {title: 1}});
@@ -23,15 +36,17 @@ Template.sound.blobURL = function() {
 
 Template.sound.events({
     'click .play-pause': function(e) {
-        var sound = document.getElementById(this._id);
+        //var sound = document.getElementById(this._id);
+        var sound = document.body.querySelector('#' + this._id + ' audio');
         togglePlay(e.target, sound);
         sound.removeAttribute('loop');
     },
     
-    'click .loop' : function(e) {
-        var sound = document.getElementById(this._id);
-        sound.setAttribute('loop');
-        togglePlay(e.target, sound);
+    'ended audio': function(e, template) {
+       // var sound = document.getElementById(this._id);
+        var icon = document.body.querySelector('#' + this._id + ' span');
+        icon.classList.remove('glyphicon-pause');
+        icon.classList.add('glyphicon-play');
     },
     
     'click .close' : function(e) {
