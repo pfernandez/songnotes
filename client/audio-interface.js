@@ -16,7 +16,7 @@ Template.audio.sounds = function() {
 
 Template.audio.events({
 
-    'click .record-stop, tap .record-stop' : function(e) {
+    'click .record-stop' : function(e) {
         var target = e.target;
         if(target.classList.contains('recording')) {
             audio.stop();
