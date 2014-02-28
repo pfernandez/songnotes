@@ -1,4 +1,4 @@
 git add -A .
-git commit -m $1
+git commit -m "${1}"
 git push origin master
 meteor deploy songnotes.meteor.com

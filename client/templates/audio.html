@@ -23,20 +23,22 @@
 </template>
 
 <template name="sound">
-    <li id="{{_id}}" class="list-group-item toggle in clearfix {{songClass}}">
-        <button type="button" class="btn btn-xs btn-link">
+    <li data-id="{{_id}}" 
+        class="list-group-item toggle in clearfix {{songClass}}">
+        
+        <button type="button" class="btn btn-lg btn-link">
             <span class="play-pause glyphicon glyphicon-play"></span>
         </button>
+        
         <audio src="{{blobURL}}"></audio>
-        {{#if title}}
-            {{title}}
-        {{else}}
-            <input class="sound-title" autocomplete="off"
-                placeholder="(untitled)">
-        {{/if}}
+
+        <input class="sound-title" autocomplete="off"
+            placeholder="(untitled)" value="{{title}}">
+            
         <button type="button" class="close pull-right"
             data-toggle="modal" data-target="#deleteSongModal">
             &times;
         </button>
+        
     </li>
 </template>

@@ -37,14 +37,16 @@ Template.sound.blobURL = function() {
 Template.sound.events({
     'click .play-pause': function(e) {
         //var sound = document.getElementById(this._id);
-        var sound = document.body.querySelector('#' + this._id + ' audio');
+        var sound = document.body.querySelector(
+            '[data-id="' + this._id + '"] audio');
         togglePlay(e.target, sound);
         sound.removeAttribute('loop');
     },
     
     'ended audio': function(e, template) {
        // var sound = document.getElementById(this._id);
-        var icon = document.body.querySelector('#' + this._id + ' span');
+        var icon = document.body.querySelector(
+            '[data-id="' + this._id + '"] span');
         icon.classList.remove('glyphicon-pause');
         icon.classList.add('glyphicon-play');
     },
