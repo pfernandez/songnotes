@@ -4,10 +4,18 @@ Template.audio.sounds = function() {
 }
 
 Template.audio.sounds = function() {
-    return audio.list();
+    
+    if(Meteor.userId()) {
+        return audio.list();
+    }
+    else {
+        console.log(Session.get('audio'));
+        return Session.get('audio');
+    }
 }
 
 Template.audio.events({
+
     'click .record-stop' : function(e) {
         var target = e.target;
         if(target.classList.contains('recording')) {
@@ -22,12 +30,6 @@ Template.audio.events({
     }
 });
 
-Template.sound.title = function() {
-    var result = Sounds.findOne({_id: this._id}, {fields: {title: 1}});
-    if(result) {
-        return result.title;
-    }
-}
 
 Template.sound.blobURL = function() {
     var blob = new Blob([this.file],{type: this.type});
@@ -35,18 +37,15 @@ Template.sound.blobURL = function() {
 }
 
 Template.sound.events({
+
     'click .play-pause': function(e) {
-        //var sound = document.getElementById(this._id);
-        var sound = document.body.querySelector(
-            '[data-id="' + this._id + '"] audio');
-        togglePlay(e.target, sound);
-        sound.removeAttribute('loop');
+        var el = e.currentTarget;
+        var sound = el.parentNode.getElementsByTagName('audio')[0];
+        togglePlay(el.querySelector('.glyphicon'), sound);
     },
     
-    'ended audio': function(e, template) {
-       // var sound = document.getElementById(this._id);
-        var icon = document.body.querySelector(
-            '[data-id="' + this._id + '"] span');
+    'ended audio': function(e) {
+        var icon = e.target.parentNode.querySelector('.glyphicon');
         icon.classList.remove('glyphicon-pause');
         icon.classList.add('glyphicon-play');
     },
@@ -62,13 +61,13 @@ Template.sound.events({
     
 });
 
-var togglePlay = function(target, sound) {
-    if(target.classList.contains('glyphicon-pause')) {
+var togglePlay = function(icon, sound) {
+    if(icon.classList.contains('glyphicon-pause')) {
         sound.pause();
     }
     else {
         sound.play();
     }
-    target.classList.toggle('glyphicon-play');
-    target.classList.toggle('glyphicon-pause');
+    icon.classList.toggle('glyphicon-play');
+    icon.classList.toggle('glyphicon-pause');
 }

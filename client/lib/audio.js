@@ -79,11 +79,20 @@ audio = function() {
         audioRecorder.exportWAV(function(blob) {
             BinaryFileReader.read(blob, function(err, fileInfo) {
                 _.extend(properties, fileInfo);
-                Meteor.call('newSound', properties, function(error, newSound) {
-                    if(error) {
-                        console.log(error.reason);
-                    }
-                });
+                if(Meteor.userId()) {
+                    Meteor.call('newSound', properties,
+                        function(error, newSound) {
+                            if(error) {
+                                console.log(error.reason);
+                            }
+                        }
+                    );
+                }
+                else {
+                    var sounds = Session.get('audio');
+                    sounds.push(properties);
+                    Session.set('audio', sounds);
+                }
             });
         });
     }

@@ -7,8 +7,8 @@ lib/ but before any other client directories.
 // Client global variables
 contentHasFocus = false; // for returning focus to content on hot reload
 Session.setDefault('saving', false);
+Session.setDefault('audio', []);
 Session.set('delete_dialog', {_id: null, title: ''});
-Session.setDefault('blob_url', ''); // last recorded audio url
 
 var justLoggedIn = false;   // so we can store an entered song on login
 
