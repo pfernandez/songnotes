@@ -31,9 +31,17 @@ Template.audio.events({
 });
 
 
-Template.sound.blobURL = function() {
+Template.sound.srcURL = function() {
+    // Return a blob URL.
     var blob = new Blob([this.file],{type: this.type});
     return (window.URL || window.webkitURL).createObjectURL(blob);
+    
+    
+    
+    // Return a base64 URL.
+    //console.log(this);
+    //var base64Data = btoa(this.data);//String.fromCharCode.apply(null, this.file));
+    //return 'data:' + this.type + ';base64,' + base64Data;
 }
 
 Template.sound.events({
@@ -41,12 +49,13 @@ Template.sound.events({
     'click .play-pause': function(e) {
         var el = e.currentTarget;
         var sound = el.parentNode.getElementsByTagName('audio')[0];
+        //console.log(sound);
         togglePlay(el.querySelector('.glyphicon'), sound);
     },
     
     'ended audio': function(e) {
         var icon = e.target.parentNode.querySelector('.glyphicon');
-        icon.classList.remove('glyphicon-pause');
+        icon.classList.remove('glyphicon-stop');
         icon.classList.add('glyphicon-play');
     },
     

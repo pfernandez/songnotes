@@ -75,10 +75,12 @@ audio = function() {
     
     // Attempt to add a new sound to the server. Returns unique sound ID
     // if successful.
-    var save = function(properties) {
+    var save = function() {
+     
+        // Save as Uint8Array
         audioRecorder.exportWAV(function(blob) {
-            BinaryFileReader.read(blob, function(err, fileInfo) {
-                _.extend(properties, fileInfo);
+            BinaryFileReader.read(blob, function(err, properties) {
+                properties.songId = song.id();
                 if(Meteor.userId()) {
                     Meteor.call('newSound', properties,
                         function(error, newSound) {
@@ -95,6 +97,22 @@ audio = function() {
                 }
             });
         });
+        
+    /* Save as normal arrays
+        audioRecorder.getBuffer(function(buffers) {
+            var properties = {
+                songId: song.id(),
+                file: [
+                    Array.prototype.slice.call(buffers[0]), 
+                    Array.prototype.slice.call(buffers[1])
+                ]
+            };
+            Meteor.call('newSound', properties, function(error, newSound) {
+                if(error) {
+                    console.log(error.reason);
+                }
+            });
+        });*/
     }
     
     var stopRecording = function() {
@@ -123,9 +141,7 @@ audio = function() {
         stop: function() {
             if(recording) {
                 stopRecording();
-                blobReady(function(blob) {
-                    save({songId: song.id(), 'blob': blob});
-                });
+                save();
             }
             else if(playing){
                 source.stop();
@@ -137,7 +153,7 @@ audio = function() {
             if(recording) {
                 stopRecording();
             }
-            if(! playing && recording !== null) {
+            if(! playing) {
                 playing = true;
                 audioRecorder.getBuffer(function(buffers) {
                     source = audioContext.createBufferSource();

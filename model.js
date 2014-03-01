@@ -144,43 +144,36 @@ Meteor.methods({
     newSound: function(properties) {
     
         var user = Meteor.userId();
-//{name: undefined, type: "audio/wav", size: 409644, file: Uint8Array[409644]}    
+            
         if(user) {
         
-            if(! properties) {
-                properties = {};
-            }
+            properties = properties || {};
             
-            if(! properties.title) {
-                properties.title = '';
-            }
-            
-            if(! properties.songId) {
+            if(! properties.songId)
                 throw new Error('Could not store sound: no song ID.');
-            }
-            
-            if(! properties.type) {
-                throw new Error('Could not store sound: no type specified.');
-            }
-            
-            if(! properties.file) {
+            if(! properties.file)
                 throw new Error('Could not store sound: no file provided.');
-            }
+            if(! properties.size)
+                throw new Error('Could not store sound: no size provided.');
+            if(! properties.type)
+                throw new Error('Could not store sound: no type provided.');
+            if(! properties.title)
+                properties.title = '';
         
             // Make sure only allowed properties are inserted.
             var sound = _.extend(
-                _.pick(properties, 'songId', 'title', 'type', 'file'), {
+                _.pick(properties, 'songId', 'title', 'file', 'size', 'type'), {
                     ownerId : user,
                     songId  : properties.songId,
                     title   : properties.title,
-                    type    : properties.type,
                     file    : properties.file,
+                    size    : properties.size,
+                    type    : properties.type,
                     created : new Date().getTime(),
                 }
             );
 
             properties._id = Sounds.insert(sound);
-           // console.log(properties);
             return properties;
         }
     },
