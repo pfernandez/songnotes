@@ -134,7 +134,7 @@ Sounds.allow({
 Sounds.deny({
     update: function(userId, docs, fields, modifier) {
         // The user may only edit particular fields.
-        return (_.without(fields, 'title', 'blob').length > 0);
+        return (_.without(fields, 'title').length > 0);
     }
 });
 

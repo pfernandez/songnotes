@@ -65,16 +65,7 @@ audio = function() {
       }
     }
     
-    var blobReady = function(callback) {
-        audioRecorder.getBuffer(function(buffers) {
-            audioRecorder.exportWAV(function(blob) {
-                callback(blob);
-            });
-        });
-    }
-    
-    // Attempt to add a new sound to the server. Returns unique sound ID
-    // if successful.
+    // Add a new sound to the server, or to Session if not logged in.
     var save = function() {
      
         // Save as Uint8Array
@@ -97,22 +88,6 @@ audio = function() {
                 }
             });
         });
-        
-    /* Save as normal arrays
-        audioRecorder.getBuffer(function(buffers) {
-            var properties = {
-                songId: song.id(),
-                file: [
-                    Array.prototype.slice.call(buffers[0]), 
-                    Array.prototype.slice.call(buffers[1])
-                ]
-            };
-            Meteor.call('newSound', properties, function(error, newSound) {
-                if(error) {
-                    console.log(error.reason);
-                }
-            });
-        });*/
     }
     
     var stopRecording = function() {
@@ -177,8 +152,10 @@ audio = function() {
         },
 
         download: function() {
-            blobReady(function(blob) {
-                Recorder.forceDownload(blob);
+            audioRecorder.getBuffer(function(buffers) {
+                audioRecorder.exportWAV(function(blob) {
+                    Recorder.forceDownload(blob);
+                });
             });
         },
         
