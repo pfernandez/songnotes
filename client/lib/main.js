@@ -40,7 +40,7 @@ Deps.autorun(function() {
                 var newContent = contentElement.innerHTML;
             }
             
-            if(newTitle || newContent) {
+            if(newTitle || newContent || ! _.isEmpty(Session.get('audio'))) {
                 song.add({title: newTitle, content: newContent});
             }
             

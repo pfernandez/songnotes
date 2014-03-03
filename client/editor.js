@@ -44,7 +44,9 @@ Template.editor.events({
     },
     
     'click .logInToSave': function() {
-        $('.dropdown-toggle').click();
+        document.documentElement.scrollTop = 0;
+        document.querySelector('.dropdown-toggle').click();
+        document.querySelector('#login-email').focus();
         return false;
     }
 });

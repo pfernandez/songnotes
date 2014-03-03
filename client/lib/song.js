@@ -36,6 +36,14 @@ song = {
             }
             else if(newSong) {
                 that.id(newSong._id);
+                
+                // If there are any sounds stored in the Session, add them to 
+                // the database with the new song id and clear the session.
+                var sounds = Session.get('audio');
+                for(i = 0; i < sounds.length; i++) {
+                    audio.save(sounds[i]);
+                }
+                Session.set('audio', []);
             }
         });
     },

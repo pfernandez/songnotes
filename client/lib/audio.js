@@ -65,31 +65,6 @@ audio = function() {
       }
     }
     
-    // Add a new sound to the server, or to Session if not logged in.
-    var save = function() {
-     
-        // Save as Uint8Array
-        audioRecorder.exportWAV(function(blob) {
-            BinaryFileReader.read(blob, function(err, properties) {
-                properties.songId = song.id();
-                if(Meteor.userId()) {
-                    Meteor.call('newSound', properties,
-                        function(error, newSound) {
-                            if(error) {
-                                console.log(error.reason);
-                            }
-                        }
-                    );
-                }
-                else {
-                    var sounds = Session.get('audio');
-                    sounds.push(properties);
-                    Session.set('audio', sounds);
-                }
-            });
-        });
-    }
-    
     var stopRecording = function() {
         audioRecorder.stop();
         recording = false;
@@ -116,7 +91,7 @@ audio = function() {
         stop: function() {
             if(recording) {
                 stopRecording();
-                save();
+                this.save();
             }
             else if(playing){
                 source.stop();
@@ -166,6 +141,47 @@ audio = function() {
             }
             else {
                 return null;
+            }
+        },
+        
+        // Add a new sound to the server, or to Session if not logged in.
+        save: function(properties) {
+         
+            if(properties) {
+                // If a sound object was passed in, store it to the database
+                // along with the current song id.
+                properties.songId = song.id();
+                Meteor.call('newSound', properties,
+                    function(error, newSound) {
+                        if(error) {
+                            console.log(error.reason);
+                        }
+                    }
+                );
+            }
+            else {
+                // Store the sound currently loaded in the buffer.
+                audioRecorder.exportWAV(function(blob) {
+                    BinaryFileReader.read(blob, function(err, properties) {
+                        properties.songId = song.id();
+                        if(Meteor.userId()) {
+                            // If logged in, put it in the database.
+                            Meteor.call('newSound', properties,
+                                function(error, newSound) {
+                                    if(error) {
+                                        console.log(error.reason);
+                                    }
+                                }
+                            );
+                        }
+                        else {
+                            // If not logged in, store it to the Session.
+                            var sounds = Session.get('audio');
+                            sounds.push(properties);
+                            Session.set('audio', sounds);
+                        }
+                    });
+                });
             }
         }
     }

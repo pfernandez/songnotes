@@ -63,7 +63,19 @@ Template.sound.events({
     },
     
     'change input' : function(e) {
-        Sounds.update({_id: this._id}, {$set: {title: e.target.value}});
+        if(Meteor.userId()) {
+            Sounds.update({_id: this._id}, {$set: {title: e.target.value}});
+        }
+        else if(! this.title) {
+            var sounds = Session.get('audio');
+            for(i = 0; i < sounds.length; i++) {
+                if(_.isEqual(sounds[i], this)) {
+                    sounds[i].title = e.target.value;
+                    continue;
+                }
+            }
+            Session.set('audio', sounds);
+        }
     }
     
 });
