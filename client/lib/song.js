@@ -6,14 +6,14 @@ song = {
     id: function(songId) {
         if(songId || songId === null) {
             Session.set('song_id', songId);
+            if(songId) {
+                Meteor.users.update({_id: Meteor.userId()},
+                    {$set: {currentSongId: this.id()}}
+                );
+            }
         }
         else {
             return Session.get('song_id');
-        }
-        if(songId) {
-            Meteor.users.update({_id: Meteor.userId()},
-                {$set: {currentSongId: this.id()}}
-            );
         }
     },
 

@@ -46,7 +46,6 @@ Deps.autorun(function() {
             
             justLoggedIn = false;
         }
-        
         song.loadMostRecent();
     }
     else if(! userId && song.id()) {

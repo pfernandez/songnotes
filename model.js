@@ -65,7 +65,7 @@ Meteor.methods({
 // Returns a cursor of songs belonging to the specified user.
 getSongList = function(userId) {
     var songList = Songs.find({ownerId: userId},
-        {fields: {title: 1}}, {sort: {_id: -1}});
+        {sort: {created: 1}}, {fields: {title: 1}});
     if(songList.count() > 0) {
         return songList;
     }

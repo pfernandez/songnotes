@@ -11,15 +11,7 @@ Template.songList.events({
 });
 
 Template.songList.rendered = function() {
-
     toggleLists();
-
-    // If the user has any songs, make sure one is always current.
-    var list = this.findAll('.list-group-item');
-    if(list.length > 0 && ! this.find('.active')) {
-        list[list.length-1].click();
-    }
-    
     // Updating the song list causes the content to lose focus. Refocus it.
     if(contentHasFocus) {
        document.getElementById('content').focus();
