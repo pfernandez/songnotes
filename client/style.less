@@ -1,6 +1,24 @@
 
 @lightGray: #bababa;
 
+@keyframes redPulse {
+  from { background-color: #d2322d; box-shadow: 0 0 9px #333; }
+  50% { background-color: #d9534f; box-shadow: 0 0 18px #d9534f; }
+  to { background-color: #d2322d; box-shadow: 0 0 9px #333; }
+}
+
+@-webkit-keyframes redPulse {
+  from { background-color: #d2322d; -webkit-box-shadow: 0 0 9px #333; }
+  50% { background-color: #d9534f; -webkit-box-shadow: 0 0 18px #d9534f; }
+  to { background-color: #d2322d; -webkit-box-shadow: 0 0 9px #333; }
+}
+
+@-moz-keyframes redPulse {
+  from { background-color: #d2322d; -moz-box-shadow: 0 0 9px #333; }
+  50% { background-color: #d9534f; -moz-box-shadow: 0 0 18px #d9534f; }
+  to { background-color: #d2322d; -moz-box-shadow: 0 0 9px #333; }
+}
+
 .navbar .dropdown-toggle {
     padding: 15px;
 }
@@ -85,7 +103,15 @@ menu input {
 }
 
 .recording {
-    border-radius: 3px;
+    animation-name: redPulse;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+    -webkit-animation-name: redPulse;
+    -webkit-animation-duration: 1s;
+    -webkit-animation-iteration-count: infinite;
+    -moz-animation-name: redPulse;
+    -moz-animation-duration: 1s;
+    -moz-animation-iteration-count: infinite;
 }
 
 .panel-body {
