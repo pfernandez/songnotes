@@ -9,6 +9,7 @@
         </button>
         
         <div id="toggle-songs" class="mobile-collapse collapse">
+            
             {{#if userSongs}}
                 <div class="list-group">
                     {{#each userSongs}}
@@ -16,9 +17,17 @@
                     {{/each}}
                 </div>
             {{/if}}
-            <button type="button" class="addSong btn btn-default">
-                <span class="glyphicon glyphicon-plus"></span> New song
-            </button>
+            
+            {{#if userCanAddSongs}}
+                <button type="button" class="addSong btn btn-default">
+                    <span class="glyphicon glyphicon-plus"></span> New song
+                </button>
+            {{else}}
+                <p class="soft-text">
+                    You've added the maximum number of allowed songs.
+                </p>
+            {{/if}}
+            
         </div>
         
     {{else}}
@@ -54,6 +63,6 @@
             data-toggle="modal" data-target="#deleteModal">
             &times;
         </button>
-
+    
     </a>
 </template>

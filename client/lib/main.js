@@ -51,11 +51,33 @@ Deps.autorun(function() {
     else if(! userId && song.id()) {
         // The user just logged out, so remove the current song.
         song.id(null);
-        
-        // This is a hack, because the title wasn't re-rendering on logout.
-        //document.getElementById('song-title').value = '';
     }
 });
+
+
+// Handle back and forward buttons so that the url always corresponds to the
+// current state of the app. Works together with song.id().
+window.onpopstate = function(e) {
+
+    if(! Meteor.userId()) {
+        // If not logged in, always show just the root url.
+        window.history.replaceState({}, '', '.');
+    }
+    else if(e.state) { 
+        
+        if(e.state._id) {
+            // Load the song corresponding to the url.
+            song.id(e.state._id);
+        }
+        else {
+            // If the url is blank, set it to the current song id.
+            var songId = song.id();
+            if(songId) {
+                window.history.replaceState({_id: songId}, '', songId);
+            }
+        }
+    }
+}
 
 
 // Display song lists as either full or collapsed depending on window width.

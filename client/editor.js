@@ -10,7 +10,7 @@ Template.editor.events({
 
     // Store the content in the editor.
     'input #content' : function(e) {
-        savedSelection = rangy.saveSelection();
+        //savedSelection = rangy.saveSelection();
         if(song.id()) {
         
             // If "saving..." is not visible, show it.
@@ -27,7 +27,7 @@ Template.editor.events({
                         Meteor.clearInterval(interval);
                         interval = null;
                     }, 3000);
-                } 
+                }
             });
         }
         else {

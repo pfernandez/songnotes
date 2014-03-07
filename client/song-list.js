@@ -3,6 +3,10 @@ Template.songList.userSongs = function() {
     return getSongList(Meteor.userId());
 }
 
+Template.songList.userCanAddSongs = function() {
+    return userCanAddSongs();
+}
+
 Template.songList.events({
     // add an empty song when the button is clicked.
     'click .addSong' : function(e) {

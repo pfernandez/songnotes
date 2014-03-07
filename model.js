@@ -1,6 +1,9 @@
 ////////////////////////////////////////////////////////////////////////////////
 // Songs: { title, content, ownerId }
 
+MAX_SONGS_PER_USER = 10;
+MAX_SOUNDS_PER_SONG = 10;
+
 Songs = new Meteor.Collection('songs');
 
 Songs.allow({
@@ -33,7 +36,7 @@ Meteor.methods({
     
         var user = Meteor.userId();
     
-        if(user) {
+        if(user && userCanAddSongs()) {
         
             if(! properties) {
                 properties = {};
@@ -72,6 +75,25 @@ getSongList = function(userId) {
     else {
         return null;
     }
+}
+
+// Returns whether the max number of songs has been reached.
+userCanAddSongs = function() {
+    var songList = getSongList(Meteor.userId()),
+        count = songList ? songList.count() : 0,
+        result = (count < MAX_SONGS_PER_USER) ? true : false;
+    return result;
+}
+
+// Returns whether the max number of sounds has been added to the currrent song.
+userCanAddSounds = function() {
+    var user = Meteor.users.findOne({_id: Meteor.userId()}, 
+            {fields: {currentSongId: 1}}),
+        songId = user ? user.currentSongId : null;
+        sounds = Sounds.find({'songId': songId}, {fields: {_id: 1}}),
+        count = sounds ? sounds.count() : 0,
+        result = (count < MAX_SOUNDS_PER_SONG) ? true : false;
+    return result;
 }
 
 // If the desired title is not unique, append an integer to it.
@@ -145,12 +167,20 @@ Meteor.methods({
     
         var user = Meteor.userId();
             
-        if(user) {
+        if(user && userCanAddSounds()) {
         
             properties = properties || {};
             
-            if(! properties.songId)
+            if(! properties.songId) {
                 throw new Error('Could not store sound: no song ID.');
+            }
+            else {
+                var songs = Songs.find(
+                    {_id: properties.songId}, {fields: {_id: 1}});
+                if(! songs || songs.count() < 1) {
+                    throw new Error('Could not store sound: invalid song ID.');
+                }
+            }
             if(! properties.file)
                 throw new Error('Could not store sound: no file provided.');
             if(! properties.size)

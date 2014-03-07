@@ -1,8 +1,3 @@
-
-Template.audio.sounds = function() {
-    return song.recordingsList();
-}
-
 Template.audio.sounds = function() {
     
     if(Meteor.userId()) {
@@ -16,16 +11,23 @@ Template.audio.sounds = function() {
 Template.audio.events({
 
     'click .record-stop' : function(e) {
-        var target = e.target;
-        if(target.classList.contains('recording')) {
-            audio.stop();
-            target.textContent = 'Record';
+    
+        if(! userCanAddSounds()) {
+            alert("You've reach the maximum of "
+                + MAX_SOUNDS_PER_SONG + " recordings per song.");
         }
         else {
-            audio.record();
-            target.textContent = 'Stop';
+            var target = e.target;
+            if(target.classList.contains('recording')) {
+                audio.stop();
+                target.textContent = 'Record';
+            }
+            else {
+                audio.record();
+                target.textContent = 'Stop';
+            }
+            target.classList.toggle('recording');
         }
-        target.classList.toggle('recording');
     }
 });
 

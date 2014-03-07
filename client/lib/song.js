@@ -4,13 +4,34 @@ song = {
     // Otherwise sets the current song to the specified id. Pass in NULL
     // to clear all song data.
     id: function(songId) {
-        if(songId || songId === null) {
-            Session.set('song_id', songId);
-            if(songId) {
-                Meteor.users.update({_id: Meteor.userId()},
-                    {$set: {currentSongId: this.id()}}
-                );
+        
+        if(songId) {
+        
+            // Load the song if it isn't already loaded.
+            if(songId != this.id()) {
+        
+                // If it doesn't exist, replace the url and return.
+                if(Songs.find({_id: songId}, {_id: 1}).count() < 1) {
+                    window.history.replaceState({_id: song.id()}, '', song.id());
+                    return;
+                }
+                
+                Session.set('song_id', songId);
+                
+                if(songId) {
+                    Meteor.users.update({_id: Meteor.userId()},
+                        {$set: {currentSongId: this.id()}}
+                    );
+                    
+                    if(! window.event || ! window.event.state) {
+                        window.history.pushState({_id: songId}, '', songId);
+                    }
+                }
             }
+        }
+        else if(songId === null) {
+            Session.set('song_id', '');
+            window.history.replaceState({}, '', '.');
         }
         else {
             return Session.get('song_id');

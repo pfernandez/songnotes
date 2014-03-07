@@ -31,7 +31,13 @@ audio = function() {
             { audio: true },
             
             function(stream) {
+            
                 audioInput = audioContext.createMediaStreamSource(stream);
+            
+                //var inputPoint = audioContext.createGain();
+                //inputPoint.gain.value = 0.0;
+                //audioInput.connect(inputPoint);
+                
                 audioRecorder = new Recorder(audioInput);
                 callback && callback();
             },
