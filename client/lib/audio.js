@@ -182,6 +182,7 @@ audio = function() {
                         }
                         else {
                             // If not logged in, store it to the Session.
+                            properties.tempId = Date.now();
                             var sounds = Session.get('audio');
                             sounds.push(properties);
                             Session.set('audio', sounds);

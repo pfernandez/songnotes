@@ -60,8 +60,19 @@ Template.sound.events({
     },
     
     'click .close' : function(e) {
-        Session.set('delete_dialogue', this);
-        Sounds.remove(this._id);
+        if(Meteor.userId()) {
+            Sounds.remove(this._id);
+        }
+        else {
+            var sounds = Session.get('audio');
+            for(var i = 0; i < sounds.length; i++) {
+                if(sounds[i].tempId == this.tempId) {
+                    sounds.splice(i, 1);
+                    continue;
+                }
+            }
+            Session.set('audio', sounds);
+        }
     },
     
     'change input' : function(e) {
@@ -70,8 +81,8 @@ Template.sound.events({
         }
         else if(! this.title) {
             var sounds = Session.get('audio');
-            for(i = 0; i < sounds.length; i++) {
-                if(_.isEqual(sounds[i], this)) {
+            for(var i = 0; i < sounds.length; i++) {
+                if(sounds[i].tempId == this.tempId) {
                     sounds[i].title = e.target.value;
                     continue;
                 }
