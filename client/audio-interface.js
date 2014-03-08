@@ -25,6 +25,18 @@ Template.audio.events({
             else {
                 audio.record();
                 target.textContent = 'Stop';
+                
+                // Stop recording automatically after 1 minute.
+                setTimeout(function() {
+                    if(target.classList.contains('recording')) {
+                        audio.stop();
+                        target.textContent = 'Record';
+                        target.classList.toggle('recording');
+                        alert("You've reach the max time of "
+                            + MAX_SECONDS_PER_SOUND
+                            + " seconds for a recording.");
+                    }
+                }, MAX_SECONDS_PER_SOUND * 1000);
             }
             target.classList.toggle('recording');
         }

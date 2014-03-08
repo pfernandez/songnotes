@@ -3,6 +3,7 @@
 
 MAX_SONGS_PER_USER = 10;
 MAX_SOUNDS_PER_SONG = 10;
+MAX_SECONDS_PER_SOUND = 60;
 
 Songs = new Meteor.Collection('songs');
 
