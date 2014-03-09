@@ -39,27 +39,17 @@ Meteor.methods({
     
         if(user && userCanAddSongs()) {
         
-            if(! properties) {
-                properties = {};
-            }
-            
-            if(properties.title) {
-                properties.title = getUniqueTitle(properties.title);
-            }
-            else {
-                properties.title = '';
-            }
-            
-            if(! properties.content) {
-                properties.content = '';
-            }
+            properties = properties || {};
+            properties.ownerId = user;
+            properties.created = Date.now();
+            properties.title   = getUniqueTitle(properties.title);
+            properties.content = properties.content || '';
         
             // Make sure only allowed properties are inserted.
-            var song = _.extend(_.pick(properties, 'title', 'content'), {
-                ownerId: user, created: new Date().getTime()
-            });
+            var properties = _.pick(properties,
+                'title', 'content', 'ownerId', 'created');
 
-            properties._id = Songs.insert(song);
+            properties._id = Songs.insert(properties);
             
             return properties;
         }
@@ -100,13 +90,13 @@ userCanAddSounds = function() {
 // If the desired title is not unique, append an integer to it.
 getUniqueTitle = function(title) {
 
+    if(! title) {
+        return '';
+    }
+
     var songList = getSongList(Meteor.userId());
     
     if(songList) {
-    
-        if(! title) {
-            title = 'Untitled Song';
-        }
         
         var songs = songList.fetch(),
         newTitle = title,
@@ -171,40 +161,34 @@ Meteor.methods({
         if(user && userCanAddSounds()) {
         
             properties = properties || {};
+            properties.ownerId = user;
+            properties.created = properties.created || Date.now();
+            properties.title = properties.title || '';
             
-            if(! properties.songId) {
-                throw new Error('Could not store sound: no song ID.');
-            }
-            else {
-                var songs = Songs.find(
-                    {_id: properties.songId}, {fields: {_id: 1}});
-                if(! songs || songs.count() < 1) {
-                    throw new Error('Could not store sound: invalid song ID.');
-                }
-            }
             if(! properties.file)
                 throw new Error('Could not store sound: no file provided.');
             if(! properties.size)
                 throw new Error('Could not store sound: no size provided.');
             if(! properties.type)
                 throw new Error('Could not store sound: no type provided.');
-            if(! properties.title)
-                properties.title = '';
+            if(! properties.songId) {
+                throw new Error('Could not store sound: no song ID.');
+            }
+            else {
+                // Confirm that the song exists.
+                var songs = Songs.find(
+                    {_id: properties.songId}, {fields: {_id: 1}});
+                if(! songs || songs.count() < 1) {
+                    throw new Error('Could not store sound: invalid song ID.');
+                }
+            }
         
             // Make sure only allowed properties are inserted.
-            var sound = _.extend(
-                _.pick(properties, 'songId', 'title', 'file', 'size', 'type'), {
-                    ownerId : user,
-                    songId  : properties.songId,
-                    title   : properties.title,
-                    file    : properties.file,
-                    size    : properties.size,
-                    type    : properties.type,
-                    created : new Date().getTime(),
-                }
-            );
+            var properties = _.pick(properties, 'ownerId',
+                'songId', 'title', 'file', 'size', 'type', 'created');
 
-            properties._id = Sounds.insert(sound);
+            properties._id = Sounds.insert(properties);
+            
             return properties;
         }
     },

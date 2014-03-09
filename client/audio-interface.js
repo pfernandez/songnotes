@@ -8,6 +8,10 @@ Template.audio.sounds = function() {
     }
 }
 
+Template.audio.soundLoading = function() {
+    return (Session.get('sound_loading') ? true : false);
+}
+
 Template.audio.events({
 
     'click .record-stop' : function(e) {
@@ -57,6 +61,12 @@ Template.sound.srcURL = function() {
     return 'data:' + this.type + ';base64,' + btoa(s);
 }
 
+Template.sound.rendered = function() {
+    if(Session.equals('sound_loading', this.data.created)) {
+        Session.set('sound_loading', null);
+    }
+}
+
 Template.sound.events({
 
     'click .play-pause': function(e) {
@@ -78,7 +88,7 @@ Template.sound.events({
         else {
             var sounds = Session.get('audio');
             for(var i = 0; i < sounds.length; i++) {
-                if(sounds[i].tempId == this.tempId) {
+                if(sounds[i].created == this.created) {
                     sounds.splice(i, 1);
                     continue;
                 }
@@ -94,7 +104,7 @@ Template.sound.events({
         else if(! this.title) {
             var sounds = Session.get('audio');
             for(var i = 0; i < sounds.length; i++) {
-                if(sounds[i].tempId == this.tempId) {
+                if(sounds[i].created == this.created) {
                     sounds[i].title = e.target.value;
                     continue;
                 }

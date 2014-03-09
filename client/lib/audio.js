@@ -152,7 +152,7 @@ audio = function() {
         
         // Add a new sound to the server, or to Session if not logged in.
         save: function(properties) {
-         
+            
             if(properties) {
                 // If a sound object was passed in, store it to the database
                 // along with the current song id.
@@ -165,11 +165,17 @@ audio = function() {
                     }
                 );
             }
-            else {
+            else {            
+                var created = Date.now();
+                Session.set('sound_loading', created);
+            
                 // Store the sound currently loaded in the buffer.
                 audioRecorder.exportWAV(function(blob) {
                     BinaryFileReader.read(blob, function(err, properties) {
+                    
                         properties.songId = song.id();
+                        properties.created = created;
+                    
                         if(Meteor.userId()) {
                             // If logged in, put it in the database.
                             Meteor.call('newSound', properties,
@@ -182,7 +188,6 @@ audio = function() {
                         }
                         else {
                             // If not logged in, store it to the Session.
-                            properties.tempId = Date.now();
                             var sounds = Session.get('audio');
                             sounds.push(properties);
                             Session.set('audio', sounds);

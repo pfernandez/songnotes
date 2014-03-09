@@ -9,6 +9,8 @@ song = {
         
             // Load the song if it isn't already loaded.
             if(songId != this.id()) {
+            
+                Session.set('sound_loading', null);
         
                 // If it doesn't exist, replace the url and return.
                 if(Songs.find({_id: songId}, {_id: 1}).count() < 1) {
@@ -31,6 +33,7 @@ song = {
         }
         else if(songId === null) {
             Session.set('song_id', '');
+            Session.set('sound_loading', null);
             window.history.replaceState({}, '', '.');
         }
         else {
@@ -71,7 +74,7 @@ song = {
     
     // Returns a song title, or updates the title if provided.
     title: function(newTitle) {
-        if(newTitle) {
+        if(newTitle || newTitle === '') {
             Songs.update({_id: this.id()}, {$set: {title: newTitle}});
         }
         else {

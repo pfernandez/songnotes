@@ -6,7 +6,7 @@
         </button>
         
         <h2>Audio</h2>
-    
+        
         {{#if sounds}}
             <ul class="list-group">
                 {{#each sounds}}
@@ -17,6 +17,10 @@
             <p class="soft-text">
                 New recordings will show up here.
             </p>
+        {{/if}}
+    
+        {{#if soundLoading}}
+            {{>loading}}
         {{/if}}
     
     </menu>
