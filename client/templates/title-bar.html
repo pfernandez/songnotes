@@ -4,14 +4,10 @@
         <div class="song-title input-group input-group-lg">
             <input type="text" tabindex="1" class="form-control"
                 id="song-title" autocomplete="off" placeholder="Enter a title"
-                {{#if currentUser}}value="{{songTitle}}"{{/if}}>
+                value="{{songTitle}}">
         </div>
                 
-        <p class="save-indicator soft-text">
-            {{#if currentUser}}
-                {{#isolate}}{{saveIndicator}}{{/isolate}}
-            {{/if}}
-        </p>
+        <p class="save-indicator soft-text">{{saveIndicator}}</p>
         
     </div>
 </template>

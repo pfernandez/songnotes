@@ -14,14 +14,12 @@
 
 <template name="layout">
 
-    {{yield 'deleteDialog'}}
+    {{> yield 'deleteDialog'}}
     
     <div class="navbar navbar-default navbar-static-top" role="navigation">
         <div class="container-fluid">
             <a class="navbar-brand" href="#">Songnotes</a>
-            <ul class="nav pull-right">
-                {{loginButtons}}
-            </ul>
+            <ul class="nav pull-right">{{> loginButtons align="right"}}</ul>
         </div>
     </div>
 
@@ -29,23 +27,23 @@
         <div class="row full-height">
         
             <nav id="song-list" class="col-md-3 full-height">
-                {{yield 'songList'}}
+                {{> yield 'songList'}}
             </nav>
             
             <div class="col-md-9 full-height">
             
                 <div class="row">
                     <header id="title-bar" class="col-md-8">
-                        {{yield 'titleBar'}}
+                        {{> yield 'titleBar'}}
                     </header>
                 </div>
                 
                 <div id="song-content" class="row">
                     <div class="col-md-8 full-height clearfix">
-                        {{yield}}
+                        {{> yield}}
                     </div>
                     <aside id="audio" class="col-md-4 full-height">
-                        {{yield 'audio'}}
+                        {{> yield 'audio'}}
                     </aside>
                 </div>
                 

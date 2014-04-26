@@ -1,14 +1,18 @@
 
 Template.titleBar.songTitle = function() {
-    return song.title();
+    if(Meteor.userId) {
+        return song.title();
+    }
 }
 
 Template.titleBar.saveIndicator = function() {
-    if(Session.get('saving')) {
-        return 'Saving...';
-    }
-    else {
-        return 'Saved.';
+    if(Meteor.userId) {
+        if(Session.get('saving')) {
+            return 'Saving...';
+        }
+        else {
+            return 'Saved.';
+        }
     }
 }
 

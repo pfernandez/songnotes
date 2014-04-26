@@ -12,7 +12,7 @@ audio = function() {
         window.AudioContext = window.AudioContext || window.webkitAudioContext;
         audioContext = new AudioContext();
         return methods;
-    }
+    };
     
     var initGetUserMedia = function(callback) {
 
@@ -38,6 +38,7 @@ audio = function() {
                 //var inputPoint = audioContext.createGain();
                 //inputPoint.gain.value = 0.0;
                 //audioInput.connect(inputPoint);
+                //inputPoint.connect(audioContext.destination);
                 
                 audioRecorder = new Recorder(audioInput);
                 callback && callback();
@@ -48,7 +49,7 @@ audio = function() {
                 Session.set('recording', false);
             }
         );
-    }
+    };
     
     var BinaryFileReader = {
         read: function(file, callback) {
@@ -70,7 +71,7 @@ audio = function() {
 
             reader.readAsArrayBuffer(file);
         }
-    }
+    };
     
     var startRecording = function() {
         audioRecorder.clear();
@@ -85,7 +86,7 @@ audio = function() {
             }
         }, MAX_SECONDS_PER_SOUND * 1000);
         audioRecorder.record();
-    }
+    };
     
     var stopRecording = function() {
         audioRecorder.stop();
@@ -94,7 +95,7 @@ audio = function() {
             clearTimeout(recTimer);
             recTimer = null;
         }
-    }
+    };
     
     var saveToDB = function(properties) {
         Meteor.call('newSound', properties,
@@ -104,7 +105,7 @@ audio = function() {
                 }
             }
         );
-    }
+    };
 
     var methods = {
     
@@ -219,7 +220,7 @@ audio = function() {
                 });
             }
         }
-    }
+    };
     
     return init();
 }();
