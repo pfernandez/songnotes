@@ -1,8 +1,9 @@
 <template name="audio">   
     <menu>
         
-        <button type="button" class="record-stop btn btn-sm btn-danger">
-            Record
+        <button type="button"
+            class="record-stop btn btn-sm btn-danger {{recordingClass}}">
+            {{recordButtonText}}
         </button>
         
         <h2>Audio</h2>
@@ -28,7 +29,7 @@
 
 <template name="sound">
     <li data-id="{{_id}}" 
-        class="list-group-item toggle in clearfix {{songClass}}">
+        class="list-group-item toggle in clearfix">
         
         <button type="button" class="play-pause btn btn-lg btn-link">
             <span class="glyphicon glyphicon-play"></span>

@@ -6,8 +6,11 @@ lib/ but before any other client directories.
 
 // Client global variables
 contentHasFocus = false; // for returning focus to content on hot reload
+recordingAllowed = userCanAddSounds();
 Session.setDefault('saving', false);
 Session.setDefault('audio', []);
+Session.setDefault('recording', false);
+Session.setDefault('playing', false);
 Session.set('delete_dialog', {_id: null, title: ''});
 
 var justLoggedIn = false;   // so we can store an entered song on login

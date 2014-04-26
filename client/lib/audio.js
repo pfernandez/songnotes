@@ -5,7 +5,8 @@ audio = function() {
         audioRecorder,
         source,
         playing,
-        recording = null;
+        initialized = false,
+        recTimer = null;
 
     var init = function() {
         window.AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -44,69 +45,98 @@ audio = function() {
             
             function(err) {
                 console.log('Error getting audio: ' + err);
-                recording = false;
+                Session.set('recording', false);
             }
         );
     }
     
     var BinaryFileReader = {
-      read: function(file, callback){
-        var reader = new FileReader;
+        read: function(file, callback) {
+            var reader = new FileReader;
 
-        var fileInfo = {
-          type: file.type,
-          size: file.size,
-          file: null
-        }
+            var fileInfo = {
+                type: file.type,
+                size: file.size,
+                file: null
+            }
 
-        reader.onload = function(){
-          fileInfo.file = new Uint8Array(reader.result);
-          callback(null, fileInfo);
-        }
-        reader.onerror = function(){
-          callback(reader.error);
-        }
+            reader.onload = function(){
+                fileInfo.file = new Uint8Array(reader.result);
+                callback(null, fileInfo);
+            }
+            reader.onerror = function(){
+                callback(reader.error);
+            }
 
-        reader.readAsArrayBuffer(file);
-      }
+            reader.readAsArrayBuffer(file);
+        }
+    }
+    
+    var startRecording = function() {
+        audioRecorder.clear();
+        Session.set('recording', true);
+        // Stop recording automatically after 1 minute.
+        recTimer = setTimeout(function() {
+            if(Session.get('recording')) {
+                methods.stop();
+                alert("You've reach the max time of "
+                    + MAX_SECONDS_PER_SOUND
+                    + " seconds for a recording.");
+            }
+        }, MAX_SECONDS_PER_SOUND * 1000);
+        audioRecorder.record();
     }
     
     var stopRecording = function() {
         audioRecorder.stop();
-        recording = false;
+        Session.set('recording', false);
+        if(recTimer) {
+            clearTimeout(recTimer);
+            recTimer = null;
+        }
+    }
+    
+    var saveToDB = function(properties) {
+        Meteor.call('newSound', properties,
+            function(error, newSound) {
+                if(error) {
+                    alert('Unable to save sound: ' + error.reason);
+                }
+            }
+        );
     }
 
     var methods = {
     
+        createdTime: null,
+    
         record: function() {
-        
+            
             // Initialize getUserMedia on first usage.
-            if(recording === null) {
+            if(! initialized) {
                 initGetUserMedia(function() {
-                    recording = true;
-                    audioRecorder.record();
+                    initialized = true;
+                    startRecording();
                 });
             }
-            else if(! recording && ! playing) {
-                recording = true;
-                audioRecorder.clear();
-                audioRecorder.record();
+            else if(! Session.get('recording') && ! playing) {
+                startRecording();
             }
         },
         
         stop: function() {
-            if(recording) {
+            if(Session.get('recording')) {
                 stopRecording();
                 this.save();
             }
-            else if(playing){
+            else if(playing) {
                 source.stop();
                 playing = false;
             }
         },
     
         play: function(loop) {
-            if(recording) {
+            if(Session.get('recording')) {
                 stopRecording();
             }
             if(! playing) {
@@ -157,34 +187,27 @@ audio = function() {
                 // If a sound object was passed in, store it to the database
                 // along with the current song id.
                 properties.songId = song.id();
-                Meteor.call('newSound', properties,
-                    function(error, newSound) {
-                        if(error) {
-                            console.log(error.reason);
-                        }
-                    }
-                );
+                saveToDB(properties);
             }
-            else {            
-                var created = Date.now();
-                Session.set('sound_loading', created);
+            else {
+            
+                var createdTime = Date.now();
+                this.createdTime = createdTime;
+                Session.set('sound_loading', true);
             
                 // Store the sound currently loaded in the buffer.
                 audioRecorder.exportWAV(function(blob) {
+                
+                    audioRecorder.clear();
+                
                     BinaryFileReader.read(blob, function(err, properties) {
                     
                         properties.songId = song.id();
-                        properties.created = created;
+                        properties.created = createdTime;
                     
                         if(Meteor.userId()) {
                             // If logged in, put it in the database.
-                            Meteor.call('newSound', properties,
-                                function(error, newSound) {
-                                    if(error) {
-                                        console.log(error.reason);
-                                    }
-                                }
-                            );
+                            saveToDB(properties);
                         }
                         else {
                             // If not logged in, store it to the Session.

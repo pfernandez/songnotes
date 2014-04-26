@@ -1,3 +1,4 @@
+
 Template.audio.sounds = function() {
     
     if(Meteor.userId()) {
@@ -12,37 +13,28 @@ Template.audio.soundLoading = function() {
     return (Session.get('sound_loading') ? true : false);
 }
 
+Template.audio.recordButtonText = function() {
+    return (Session.get('recording') ? 'Stop' : 'Record');
+}
+
+Template.audio.recordingClass = function() {
+    return (Session.get('recording') ? 'recording' : '');
+}
+
 Template.audio.events({
 
     'click .record-stop' : function(e) {
-    
-        if(! userCanAddSounds()) {
-            alert("You've reach the maximum of "
-                + MAX_SOUNDS_PER_SONG + " recordings per song.");
-        }
-        else {
-            var target = e.target;
-            if(target.classList.contains('recording')) {
+        if(recordingAllowed) {
+            if(Session.get('recording')) {
                 audio.stop();
-                target.textContent = 'Record';
             }
             else {
                 audio.record();
-                target.textContent = 'Stop';
-                
-                // Stop recording automatically after 1 minute.
-                setTimeout(function() {
-                    if(target.classList.contains('recording')) {
-                        audio.stop();
-                        target.textContent = 'Record';
-                        target.classList.toggle('recording');
-                        alert("You've reach the max time of "
-                            + MAX_SECONDS_PER_SOUND
-                            + " seconds for a recording.");
-                    }
-                }, MAX_SECONDS_PER_SOUND * 1000);
             }
-            target.classList.toggle('recording');
+        }
+        else {
+            alert("You've reach the maximum of "
+                + MAX_SOUNDS_PER_SONG + " recordings per song.");
         }
     }
 });
@@ -62,17 +54,26 @@ Template.sound.srcURL = function() {
 }
 
 Template.sound.rendered = function() {
-    if(Session.equals('sound_loading', this.data.created)) {
-        Session.set('sound_loading', null);
+    if(audio.createdTime == this.data.created) {
+        Session.set('sound_loading', false);
+        recordingAllowed = userCanAddSounds();
     }
 }
 
 Template.sound.events({
 
     'click .play-pause': function(e) {
-        var el = e.currentTarget;
-        var sound = el.parentNode.getElementsByTagName('audio')[0];
-        togglePlay(el.querySelector('.glyphicon'), sound);
+        var el = e.currentTarget,
+            sound = el.parentNode.getElementsByTagName('audio')[0],
+            icon = el.querySelector('.glyphicon');
+        if(icon.classList.contains('glyphicon-pause')) {
+            sound.pause();
+        }
+        else {
+            sound.play();
+        }
+        icon.classList.toggle('glyphicon-play');
+        icon.classList.toggle('glyphicon-pause');
     },
     
     'ended audio': function(e) {
@@ -114,14 +115,3 @@ Template.sound.events({
     }
     
 });
-
-var togglePlay = function(icon, sound) {
-    if(icon.classList.contains('glyphicon-pause')) {
-        sound.pause();
-    }
-    else {
-        sound.play();
-    }
-    icon.classList.toggle('glyphicon-play');
-    icon.classList.toggle('glyphicon-pause');
-}
