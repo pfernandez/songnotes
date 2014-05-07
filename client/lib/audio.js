@@ -106,6 +106,20 @@ audio = function() {
             }
         );
     };
+    
+    var saveToFile = function(properties) {
+    
+        var newFile = new FS.File(properties.file);
+        newFile.songId = properties.songId;
+        newFile.ownerId = Meteor.userId();
+    
+        Sounds.insert(newFile, function (err, fileObj) {
+            if(err) {
+                alert('Unable to save sound: ' + err.reason);
+            }
+        });
+        
+    };
 
     var methods = {
     
@@ -188,7 +202,7 @@ audio = function() {
                 // If a sound object was passed in, store it to the database
                 // along with the current song id.
                 properties.songId = song.id();
-                saveToDB(properties);
+                saveToFile(properties);
             }
             else {
             
@@ -200,15 +214,18 @@ audio = function() {
                 audioRecorder.exportWAV(function(blob) {
                 
                     audioRecorder.clear();
+                    
+                    var properties = [];
+                    properties.file = blob;
                 
-                    BinaryFileReader.read(blob, function(err, properties) {
+                  //  BinaryFileReader.read(blob, function(err, properties) {
                     
                         properties.songId = song.id();
                         properties.created = createdTime;
                     
                         if(Meteor.userId()) {
                             // If logged in, put it in the database.
-                            saveToDB(properties);
+                            saveToFile(properties);
                         }
                         else {
                             // If not logged in, store it to the Session.
@@ -216,7 +233,7 @@ audio = function() {
                             sounds.push(properties);
                             Session.set('audio', sounds);
                         }
-                    });
+                  //  });
                 });
             }
         }

@@ -126,7 +126,25 @@ getUniqueTitle = function(title) {
 ////////////////////////////////////////////////////////////////////////////////
 // Meteor.users: { currentSong }
 
-Sounds = new Meteor.Collection('sounds');
+var soundStore = new FS.Store.FileSystem("sounds", {
+    path: "~/ad/songnotes/public/cfs/files"
+});
+
+Sounds = new FS.Collection("sounds", {
+    stores: [soundStore],
+    filter: {
+      allow: {
+        contentTypes: ['audio/*']
+      }
+    },
+    onInvalid: function (message) {
+      if (Meteor.isClient) {
+        alert(message);
+      } else {
+        console.log(message);
+      }
+    }
+});
 
 Sounds.allow({
     insert: function(userId, doc) {
@@ -141,16 +159,20 @@ Sounds.allow({
         // Users can only remove their own documents.
         return doc.ownerId === userId;
     },
+    download: function(userId, doc) {
+        // Users can only download their own documents.
+        return doc.ownerId === userId;
+    },
     fetch: ['ownerId']
 });
-
+/*
 Sounds.deny({
     update: function(userId, docs, fields, modifier) {
         // The user may only edit particular fields.
         return (_.without(fields, 'title').length > 0);
     }
 });
-
+*/
 Meteor.methods({
 
     // Insert a new song into the database.

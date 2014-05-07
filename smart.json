@@ -3,6 +3,7 @@
     "iron-router": {},
     "spin": {},
     "accounts-ui-bootstrap-3": {},
-    "bootstrap-3": {}
+    "bootstrap-3": {},
+    "collectionFS": {}
   }
 }
