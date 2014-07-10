@@ -114,6 +114,7 @@ audio = function() {
         newFile.ownerId = Meteor.userId();
     
         Sounds.insert(newFile, function (err, fileObj) {
+            Session.set('sound_loading', false);
             if(err) {
                 alert('Unable to save sound: ' + err.reason);
             }

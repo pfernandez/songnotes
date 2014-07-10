@@ -127,7 +127,7 @@ getUniqueTitle = function(title) {
 // Meteor.users: { currentSong }
 
 var soundStore = new FS.Store.FileSystem("sounds", {
-    path: "~/ad/songnotes/public/cfs/files"
+    path: "~/ad/songnotes/.uploads"
 });
 
 Sounds = new FS.Collection("sounds", {
@@ -165,14 +165,14 @@ Sounds.allow({
     },
     fetch: ['ownerId']
 });
-/*
+
 Sounds.deny({
     update: function(userId, docs, fields, modifier) {
         // The user may only edit particular fields.
         return (_.without(fields, 'title').length > 0);
     }
 });
-*/
+
 Meteor.methods({
 
     // Insert a new song into the database.
