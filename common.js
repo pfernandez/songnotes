@@ -128,7 +128,7 @@ getUniqueTitle = function(title) {
 
 Sounds = new FS.Collection('sounds', {
     stores: [
-        new FS.Store.FileSystem('sounds', {path: "~/ad/songnotes/uploads"})
+        new FS.Store.FileSystem('sounds')
     ],
     filter: {
       allow: {

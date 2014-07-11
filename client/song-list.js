@@ -29,7 +29,6 @@ Template.songItem.songClass = function() {
 Template.songItem.events({
     'click .list-group-item': function(e) {
         e.preventDefault();
-        console.log(this._id);
         if(! Session.get('delete_dialog')._id) {
             song.id(this._id);
         }
