@@ -51,7 +51,6 @@ Template.sound.srcURL = function() {
         s += String.fromCharCode(this.file[i]);
     }
     return 'data:' + this.type + ';base64,' + btoa(s);*/
-    console.log(this);
     return window.location.protocol + "//" + window.location.host +  this.url();
 }
 

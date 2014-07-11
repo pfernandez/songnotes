@@ -61,11 +61,11 @@ audio = function() {
                 file: null
             }
 
-            reader.onload = function(){
+            reader.onload = function() {
                 fileInfo.file = new Uint8Array(reader.result);
                 callback(null, fileInfo);
             }
-            reader.onerror = function(){
+            reader.onerror = function() {
                 callback(reader.error);
             }
 
@@ -112,7 +112,9 @@ audio = function() {
         var newFile = new FS.File(properties.file);
         newFile.songId = properties.songId;
         newFile.ownerId = Meteor.userId();
-    
+        newFile.name('untitled');
+        newFile.extension('wav');
+        console.log(newFile);
         Sounds.insert(newFile, function (err, fileObj) {
             Session.set('sound_loading', false);
             if(err) {

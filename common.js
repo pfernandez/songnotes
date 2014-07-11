@@ -126,12 +126,10 @@ getUniqueTitle = function(title) {
 ////////////////////////////////////////////////////////////////////////////////
 // Meteor.users: { currentSong }
 
-var soundStore = new FS.Store.FileSystem("sounds", {
-    path: "~/ad/songnotes/.uploads"
-});
-
-Sounds = new FS.Collection("sounds", {
-    stores: [soundStore],
+Sounds = new FS.Collection('sounds', {
+    stores: [
+        new FS.Store.FileSystem('sounds', {path: "~/ad/songnotes/uploads"})
+    ],
     filter: {
       allow: {
         contentTypes: ['audio/*']
@@ -168,8 +166,11 @@ Sounds.allow({
 
 Sounds.deny({
     update: function(userId, docs, fields, modifier) {
-        // The user may only edit particular fields.
-        return (_.without(fields, 'title').length > 0);
+        // Allow only title changes by the user,
+        // and chunked inserts by CollectionFS.
+        return (_.without(fields,
+            'title', 'chunkSize', 'chunkCount', 'chunkSum'
+        ).length > 0);
     }
 });
 

@@ -10,6 +10,14 @@
       <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
       <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
+    
+    <style>
+        /* Temp hack while accounts-bootstrap-ui get their crap together. */
+        #login-dropdown-list .dropdown-menu {
+            right: 0;
+            left: auto;
+        }
+    </style>
 </head>
 
 <template name="layout">
@@ -19,7 +27,7 @@
     <div class="navbar navbar-default navbar-static-top" role="navigation">
         <div class="container-fluid">
             <a class="navbar-brand" href="#">Songnotes</a>
-            <ul class="nav pull-right">{{> loginButtons align="right"}}</ul>
+            <ul class="nav pull-right">{{> loginButtons }}</ul>
         </div>
     </div>
 

@@ -14,3 +14,5 @@ bootstrap-3
 less
 collectionFS
 cfs-filesystem
+npm
+cfs-gridfs

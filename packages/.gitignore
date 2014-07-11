@@ -28,3 +28,5 @@
 /cfs-filesystem
 /reactive-property
 /micro-queue
+/npm
+/emitter
