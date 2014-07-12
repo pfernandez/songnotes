@@ -109,6 +109,7 @@ audio = function() {
     
     var saveToFile = function(properties) {
     
+        // TODO: eliminate properties.file and use properties.blobURL instead?
         var newFile = new FS.File(properties.file);
         newFile.songId = properties.songId;
         newFile.ownerId = Meteor.userId();
@@ -217,8 +218,10 @@ audio = function() {
                 
                     audioRecorder.clear();
                     
-                    var properties = [];
+                    var properties = {};
                     properties.file = blob;
+                    properties.blobURL = 
+                        (window.URL || window.webkitURL).createObjectURL(blob);
                 
                   //  BinaryFileReader.read(blob, function(err, properties) {
                     
@@ -240,6 +243,5 @@ audio = function() {
             }
         }
     };
-    
     return init();
 }();

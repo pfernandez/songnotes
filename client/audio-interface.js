@@ -41,17 +41,20 @@ Template.audio.events({
 
 
 Template.sound.srcURL = function() {
+    return this.blobURL ||
+        window.location.protocol + "//" + window.location.host + this.url();
+    
     // Return a blob URL. Does not work yet in Android Chrome 33 or FF.
     //var blob = new Blob([this.file],{type: this.type});
     //return (window.URL || window.webkitURL).createObjectURL(blob);
-    /*
-    // Return a base64 URL. Works in Android Chrome 33 Beta & FF 27.0.
+    
+    /* Return a base64 URL. Slow, but works in Android Chrome 33 Beta 
+       & FF 27.0.
     var s = '';
     for(var i = 0, l = this.file.length; i < l; i++) {
         s += String.fromCharCode(this.file[i]);
     }
     return 'data:' + this.type + ';base64,' + btoa(s);*/
-    return window.location.protocol + "//" + window.location.host +  this.url();
 }
 
 Template.sound.rendered = function() {
