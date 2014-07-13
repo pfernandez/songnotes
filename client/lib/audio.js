@@ -34,11 +34,12 @@ audio = function() {
             function(stream) {
             
                 audioInput = audioContext.createMediaStreamSource(stream);
-            
-                //var inputPoint = audioContext.createGain();
-                //inputPoint.gain.value = 0.0;
-                //audioInput.connect(inputPoint);
-                //inputPoint.connect(audioContext.destination);
+                
+                // Hopefully prevents clipping on init.
+                var inputPoint = audioContext.createGain();
+                inputPoint.gain.value = 0.0;
+                audioInput.connect(inputPoint);
+                inputPoint.connect(audioContext.destination);
                 
                 audioRecorder = new Recorder(audioInput);
                 callback && callback();
@@ -49,28 +50,6 @@ audio = function() {
                 Session.set('recording', false);
             }
         );
-    };
-    
-    var BinaryFileReader = {
-        read: function(file, callback) {
-            var reader = new FileReader;
-
-            var fileInfo = {
-                type: file.type,
-                size: file.size,
-                file: null
-            }
-
-            reader.onload = function() {
-                fileInfo.file = new Uint8Array(reader.result);
-                callback(null, fileInfo);
-            }
-            reader.onerror = function() {
-                callback(reader.error);
-            }
-
-            reader.readAsArrayBuffer(file);
-        }
     };
     
     var startRecording = function() {
@@ -95,16 +74,6 @@ audio = function() {
             clearTimeout(recTimer);
             recTimer = null;
         }
-    };
-    
-    var saveToDB = function(properties) {
-        Meteor.call('newSound', properties,
-            function(error, newSound) {
-                if(error) {
-                    alert('Unable to save sound: ' + error.reason);
-                }
-            }
-        );
     };
     
     var saveToFile = function(newFile) {
@@ -193,17 +162,15 @@ audio = function() {
         },
         
         // Add a new sound to the server, or to Session if not logged in.
-        save: function(properties) {
+        save: function(audioFile) {
             
-            if(properties) {
-                // If a sound object was passed in, store it to the database
-                // along with the current song id.
-                saveToFile(properties);
+            if(audioFile) {
+                // If a sound object was passed in, save it.
+                saveToFile(audioFile);
             }
             else {
-            
-                var createdTime = Date.now();
-                this.createdTime = createdTime;
+                var that = this;
+                that.createdTime = Date.now();
                 Session.set('sound_loading', true);
             
                 // Store the sound currently loaded in the buffer.
@@ -216,24 +183,60 @@ audio = function() {
                     newFile.name('untitled');
                     newFile.extension('wav');
                     newFile.songId = song.id();
-                    newFile.created = createdTime;
+                    newFile.created = that.createdTime;
                     
                     if(Meteor.userId()) {
-                        // If logged in, put it in the database.
+                        // If logged in, save the file to disk.
                         saveToFile(newFile);
                     }
                     else {
-                        // If not logged in, store it to the Session.
-                        
-                        newFile.blobURL = (window.URL || window.webkitURL)
-                            .createObjectURL(blob);
-                        var sounds = cachedAudio.get();
-                        sounds.push(newFile);
-                        cachedAudio.set(sounds);
+                        // If not logged in, store it in a local array.
+                        that.cache.append(newFile);
                     }
                 });
             }
+        },
+                
+        // Temporary reactive audio storage for non-logged in users.
+        cache: {
+
+            data: [],
+            
+            get: function() {
+                if(! this.dependency) {
+                    this.dependency = new Deps.Dependency();
+                }
+                this.dependency.depend();
+                return this.data;
+            },
+            
+            set: function(fileArray) {
+                this.data = fileArray;
+                this.dependency.changed();
+            },
+            
+            append: function(audioFile) {
+                // Add a blob URL so that it can be played back.       
+                audioFile.blobURL = (window.URL || window.webkitURL)
+                    .createObjectURL(audioFile.data.blob);
+                this.data.push(audioFile);
+                this.dependency.changed();
+            },
+            
+            save: function() {
+                var sounds = this.data;
+                if(! _.isEmpty(sounds)) {
+                    for(i = 0; i < sounds.length; i++) {
+                        delete sounds[i].blobURL;
+                        sounds[i].ownerId = Meteor.userId();
+                        sounds[i].songId = song.id();
+                        audio.save(sounds[i]);
+                    }
+                    this.set([]);
+                }
+            }
         }
     };
+    
     return init();
 }();

@@ -5,7 +5,7 @@ Template.audio.sounds = function() {
         return audio.list();
     }
     else {
-        return cachedAudio.get();
+        return audio.cache.get();
     }
 }
 
@@ -41,21 +41,8 @@ Template.audio.events({
 
 
 Template.sound.srcURL = function() {
-
     return this.blobURL ||
         window.location.protocol + "//" + window.location.host + this.url();
-    
-    // Return a blob URL. Does not work yet in Android Chrome 33 or FF.
-    //var blob = new Blob([this.file],{type: this.type});
-    //return (window.URL || window.webkitURL).createObjectURL(blob);
-    
-    /* Return a base64 URL. Slow, but works in Android Chrome 33 Beta 
-       & FF 27.0.
-    var s = '';
-    for(var i = 0, l = this.file.length; i < l; i++) {
-        s += String.fromCharCode(this.file[i]);
-    }
-    return 'data:' + this.type + ';base64,' + btoa(s);*/
 }
 
 Template.sound.rendered = function() {
@@ -93,14 +80,14 @@ Template.sound.events({
             Sounds.remove(this._id);
         }
         else {
-            var sounds = cachedAudio.get();
+            var sounds = audio.cache.get();
             for(var i = 0; i < sounds.length; i++) {
                 if(sounds[i].created == this.created) {
                     sounds.splice(i, 1);
                     continue;
                 }
             }
-            cachedAudio.set(sounds);
+            audio.cache.set(sounds);
         }
     },
     
@@ -109,14 +96,14 @@ Template.sound.events({
             Sounds.update({_id: this._id}, {$set: {title: e.target.value}});
         }
         else if(! this.title) {
-            var sounds = cachedAudio.get();
+            var sounds = audio.cache.get();
             for(var i = 0; i < sounds.length; i++) {
                 if(sounds[i].created == this.created) {
                     sounds[i].title = e.target.value;
                     continue;
                 }
             }
-            cachedAudio.set(sounds);
+            audio.cache.set(sounds);
         }
     }
     

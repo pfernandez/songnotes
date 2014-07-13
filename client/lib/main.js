@@ -14,25 +14,6 @@ Session.set('delete_dialog', {_id: null, title: ''});
 
 var justLoggedIn = false;   // so we can store an entered song on login
 
-// Session variables aren't retaining the FS.File data type properly, so we'll
-// define our own reactive object here as a place to temporarily store
-// audio for non-logged in users.
-cachedAudio = {
-    data: [],
-    get: function() {
-        if(! this.dependency) {
-            this.dependency = new Deps.Dependency();
-        }
-        this.dependency.depend();
-        return this.data;
-    },
-    set: function(fileArray) {
-        this.data = fileArray;
-        this.dependency.changed();
-    }
-};
-
-
 // Retrieve the current song ID and title on login or refresh.
 Deps.autorun(function() {
 
@@ -60,7 +41,7 @@ Deps.autorun(function() {
                 var newContent = contentElement.innerHTML;
             }
             
-            if(newTitle || newContent || ! _.isEmpty(cachedAudio.get())) {
+            if(newTitle || newContent || ! _.isEmpty(audio.cache.get())) {
                 song.add({title: newTitle, content: newContent});
             }
             
