@@ -93,14 +93,14 @@ Template.sound.events({
             Sounds.remove(this._id);
         }
         else {
-            var sounds = Session.get('audio');
+            var sounds = cachedAudio.get();
             for(var i = 0; i < sounds.length; i++) {
                 if(sounds[i].created == this.created) {
                     sounds.splice(i, 1);
                     continue;
                 }
             }
-            Session.set('audio', sounds);
+            cachedAudio.set(sounds);
         }
     },
     
@@ -109,14 +109,14 @@ Template.sound.events({
             Sounds.update({_id: this._id}, {$set: {title: e.target.value}});
         }
         else if(! this.title) {
-            var sounds = Session.get('audio');
+            var sounds = cachedAudio.get();
             for(var i = 0; i < sounds.length; i++) {
                 if(sounds[i].created == this.created) {
                     sounds[i].title = e.target.value;
                     continue;
                 }
             }
-            Session.set('audio', sounds);
+            cachedAudio.set(sounds);
         }
     }
     
