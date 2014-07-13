@@ -1,6 +1,5 @@
 
 Template.audio.sounds = function() {
-    
     if(Meteor.userId()) {
         return audio.list();
     }
@@ -41,8 +40,9 @@ Template.audio.events({
 
 
 Template.sound.srcURL = function() {
-    return this.blobURL ||
-        window.location.protocol + "//" + window.location.host + this.url();
+console.log(this.name());
+this.name('billy');
+    return this.url();
 }
 
 Template.sound.rendered = function() {
@@ -92,6 +92,7 @@ Template.sound.events({
     },
     
     'change input' : function(e) {
+    
         if(Meteor.userId()) {
             Sounds.update({_id: this._id}, {$set: {title: e.target.value}});
         }

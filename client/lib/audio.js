@@ -161,7 +161,7 @@ audio = function() {
             }
         },
         
-        // Add a new sound to the server, or to Session if not logged in.
+        // Save a new sound to the server, or cache it locally if not logged in.
         save: function(audioFile) {
             
             if(audioFile) {
@@ -216,9 +216,13 @@ audio = function() {
             },
             
             append: function(audioFile) {
-                // Add a blob URL so that it can be played back.       
-                audioFile.blobURL = (window.URL || window.webkitURL)
-                    .createObjectURL(audioFile.data.blob);
+                // Temporarily replace Fs.File.url(), returning a blob URL 
+                // until it is saved to the filesystem.
+                audioFile.url_tmp = audioFile.url;
+                audioFile.url = function() {
+                    return (window.URL || window.webkitURL)
+                        .createObjectURL(this.data.blob);
+                }
                 this.data.push(audioFile);
                 this.dependency.changed();
             },
@@ -227,7 +231,8 @@ audio = function() {
                 var sounds = this.data;
                 if(! _.isEmpty(sounds)) {
                     for(i = 0; i < sounds.length; i++) {
-                        delete sounds[i].blobURL;
+                        sounds[i].url = sounds[i].url_tmp;
+                        delete sounds[i].url_tmp;
                         sounds[i].ownerId = Meteor.userId();
                         sounds[i].songId = song.id();
                         audio.save(sounds[i]);
