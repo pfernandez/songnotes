@@ -5,7 +5,7 @@ Template.audio.sounds = function() {
         return audio.list();
     }
     else {
-        return Session.get('audio');
+        return cachedAudio.get();
     }
 }
 
@@ -41,6 +41,7 @@ Template.audio.events({
 
 
 Template.sound.srcURL = function() {
+
     return this.blobURL ||
         window.location.protocol + "//" + window.location.host + this.url();
     

@@ -107,21 +107,15 @@ audio = function() {
         );
     };
     
-    var saveToFile = function(properties) {
-    
-        // TODO: eliminate properties.file and use properties.blobURL instead?
-        var newFile = new FS.File(properties.file);
-        newFile.songId = properties.songId;
-        newFile.ownerId = Meteor.userId();
-        newFile.name('untitled');
-        newFile.extension('wav');
+    var saveToFile = function(newFile) {
+        console.log(newFile);
         Sounds.insert(newFile, function (err, fileObj) {
             Session.set('sound_loading', false);
             if(err) {
                 alert('Unable to save sound: ' + err.reason);
+                console.log(err);
             }
         });
-        
     };
 
     var methods = {
@@ -204,7 +198,6 @@ audio = function() {
             if(properties) {
                 // If a sound object was passed in, store it to the database
                 // along with the current song id.
-                properties.songId = song.id();
                 saveToFile(properties);
             }
             else {
@@ -218,27 +211,26 @@ audio = function() {
                 
                     audioRecorder.clear();
                     
-                    var properties = {};
-                    properties.file = blob;
-                    properties.blobURL = 
-                        (window.URL || window.webkitURL).createObjectURL(blob);
-                
-                  //  BinaryFileReader.read(blob, function(err, properties) {
+                    var newFile = new FS.File(blob);
+                    newFile.ownerId = Meteor.userId();
+                    newFile.name('untitled');
+                    newFile.extension('wav');
+                    newFile.songId = song.id();
+                    newFile.created = createdTime;
                     
-                        properties.songId = song.id();
-                        properties.created = createdTime;
-                    
-                        if(Meteor.userId()) {
-                            // If logged in, put it in the database.
-                            saveToFile(properties);
-                        }
-                        else {
-                            // If not logged in, store it to the Session.
-                            var sounds = Session.get('audio');
-                            sounds.push(properties);
-                            Session.set('audio', sounds);
-                        }
-                  //  });
+                    if(Meteor.userId()) {
+                        // If logged in, put it in the database.
+                        saveToFile(newFile);
+                    }
+                    else {
+                        // If not logged in, store it to the Session.
+                        
+                        newFile.blobURL = (window.URL || window.webkitURL)
+                            .createObjectURL(blob);
+                        var sounds = cachedAudio.get();
+                        sounds.push(newFile);
+                        cachedAudio.set(sounds);
+                    }
                 });
             }
         }

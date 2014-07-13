@@ -34,7 +34,6 @@ Meteor.methods({
 
     // Insert a new song into the database.
     newSong: function(properties) {
-    
         var user = Meteor.userId();
     
         if(user && userCanAddSongs()) {
@@ -165,9 +164,10 @@ Sounds.allow({
 });
 
 Sounds.deny({
-    update: function(userId, docs, fields, modifier) {
+    update: function(userId, doc, fields, modifier) {
         // Allow only title changes by the user,
         // and chunked inserts by CollectionFS.
+        console.log(fields);
         return (_.without(fields,
             'title', 'chunkSize', 'chunkCount', 'chunkSum'
         ).length > 0);

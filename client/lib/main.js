@@ -15,6 +15,21 @@ Session.set('delete_dialog', {_id: null, title: ''});
 
 var justLoggedIn = false;   // so we can store an entered song on login
 
+cachedAudio = {
+    data: [],
+    get: function() {
+        if(! this.dependency) {
+            this.dependency = new Deps.Dependency();
+        }
+        this.dependency.depend();
+        return this.data;
+    },
+    set: function(fileArray) {
+        this.data = fileArray;
+        this.dependency.changed();
+    }
+};
+
 
 // Retrieve the current song ID and title on login or refresh.
 Deps.autorun(function() {
@@ -43,7 +58,7 @@ Deps.autorun(function() {
                 var newContent = contentElement.innerHTML;
             }
             
-            if(newTitle || newContent || ! _.isEmpty(Session.get('audio'))) {
+            if(newTitle || newContent || ! _.isEmpty(cachedAudio.get())) {
                 song.add({title: newTitle, content: newContent});
             }
             

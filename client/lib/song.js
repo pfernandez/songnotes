@@ -60,14 +60,18 @@ song = {
             }
             else if(newSong) {
                 that.id(newSong._id);
-                
                 // If there are any sounds stored in the Session, add them to 
                 // the database with the new song id and clear the session.
-                var sounds = Session.get('audio');
-                for(i = 0; i < sounds.length; i++) {
-                    audio.save(sounds[i]);
+                var sounds = cachedAudio.get();
+                if(! _.isEmpty(sounds)) {
+                    for(i = 0; i < sounds.length; i++) {
+                        delete sounds[i].blobURL;
+                        sounds[i].ownerId = Meteor.userId();
+                        sounds[i].songId = newSong._id;
+                        audio.save(sounds[i]);
+                    }
+                    cachedAudio.set([]);
                 }
-                Session.set('audio', []);
             }
         });
     },
