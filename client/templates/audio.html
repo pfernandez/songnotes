@@ -23,7 +23,7 @@
         {{#if soundLoading}}
             {{>loading}}
         {{/if}}
-    {{srcURL}}
+        
     </menu>
 </template>
 
@@ -31,19 +31,25 @@
     <li data-id="{{_id}}" 
         class="list-group-item toggle in clearfix">
         
-        <button type="button" class="play-pause btn btn-lg btn-link">
-            <span class="glyphicon glyphicon-play"></span>
-        </button>
+        {{#if this.isUploaded}}
         
-        <audio src="{{srcURL}}"></audio>
-
-        <input class="sound-title" autocomplete="off"
-            placeholder="(untitled)" value="{{title}}">
+            <button type="button" class="play-pause btn btn-lg btn-link">
+                <span class="glyphicon glyphicon-play"></span>
+            </button>
             
+            <audio src="{{srcURL}}"></audio>
+            
+            <input class="sound-title" autocomplete="off"
+                placeholder="(untitled)" value="{{title}}">
+            
+        {{else}}
+            {{> FS.UploadProgressBar bootstrap=true}}
+        {{/if}}        
+                
         <button type="button" class="close pull-right"
             data-toggle="modal" data-target="#deleteSongModal">
             &times;
         </button>
-        
     </li>
+    
 </template>

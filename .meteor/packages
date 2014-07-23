@@ -16,3 +16,4 @@ collectionFS
 cfs-filesystem
 npm
 cfs-gridfs
+cfs-ui

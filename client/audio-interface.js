@@ -9,7 +9,7 @@ Template.audio.sounds = function() {
 }
 
 Template.audio.soundLoading = function() {
-    return (Session.get('sound_loading') ? true : false);
+    //return (Session.get('sound_loading') ? true : false);
 }
 
 Template.audio.recordButtonText = function() {
@@ -40,8 +40,6 @@ Template.audio.events({
 
 
 Template.sound.srcURL = function() {
-console.log(this.name());
-this.name('billy');
     return this.url();
 }
 
