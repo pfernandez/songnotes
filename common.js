@@ -167,7 +167,6 @@ Sounds.deny({
     update: function(userId, doc, fields, modifier) {
         // Allow only title changes by the user,
         // and chunked inserts by CollectionFS.
-        console.log(fields);
         return (_.without(fields,
             'title', 'chunkSize', 'chunkCount', 'chunkSum'
         ).length > 0);

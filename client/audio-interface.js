@@ -9,7 +9,7 @@ Template.audio.sounds = function() {
 }
 
 Template.audio.soundLoading = function() {
-    //return (Session.get('sound_loading') ? true : false);
+    return (Session.get('sound_loading') ? true : false);
 }
 
 Template.audio.recordButtonText = function() {

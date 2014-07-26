@@ -77,7 +77,6 @@ audio = function() {
     };
     
     var saveToFile = function(newFile) {
-        console.log(newFile);
         Sounds.insert(newFile, function (err, fileObj) {
             Session.set('sound_loading', false);
             if(err) {

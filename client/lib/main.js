@@ -109,4 +109,5 @@ toggleLists = function() {
         }
     }
 }
+toggleLists();
 window.onresize = function() { toggleLists(); }
