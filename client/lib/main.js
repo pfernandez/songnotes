@@ -87,27 +87,38 @@ toggleLists = function() {
     var buttons = document.getElementsByClassName('collapse-btn'),
         lists = document.getElementsByClassName('mobile-collapse'),
         icons = document.getElementsByClassName('collapse-icon');
-        
-    if(window.innerWidth > 991) {
-        for(var i = 0; i < lists.length; i++) {
-            buttons[i].dataset['toggle'] = '';
-            if(! buttons[i].classList.contains('not-btn')) {
-                buttons[i].classList.add('not-btn');
+    
+    var goForIt = function() {
+
+        if(window.innerWidth > 991) {
+            for(var i = 0; i < lists.length; i++) {
+                buttons[i].dataset['toggle'] = '';
+                if(! buttons[i].classList.contains('not-btn')) {
+                    buttons[i].classList.add('not-btn');
+                }
+                lists[i].classList.remove('collapse');
+                icons[i].classList.remove('glyphicon-chevron-down');
             }
-            lists[i].classList.remove('collapse');
-            icons[i].classList.remove('glyphicon-chevron-down');
         }
+        else {
+            for(var i = 0; i < lists.length; i++) {
+                buttons[i].dataset['toggle'] = 'collapse';
+                buttons[i].classList.remove('not-btn');
+                if(! lists[i].classList.contains('collapse')) {
+                    lists[i].classList.add('collapse');
+                    icons[i].classList.add('glyphicon-chevron-down');
+                }
+            }
+        }
+    }
+    
+    // Sometimes the lists array takes a moment to show up. If that's the case,
+    // pause before proceeding.
+    if(! lists.item(0)) {
+        setTimeout(function() { goForIt(); }, 750);
     }
     else {
-        for(var i = 0; i < lists.length; i++) {
-            buttons[i].dataset['toggle'] = 'collapse';
-            buttons[i].classList.remove('not-btn');
-            if(! lists[i].classList.contains('collapse')) {
-                lists[i].classList.add('collapse');
-                icons[i].classList.add('glyphicon-chevron-down');
-            }
-        }
+        goForIt();
     }
 }
-toggleLists();
-window.onresize = function() { toggleLists(); }
+window.onload = window.onresize = function() { toggleLists(); }

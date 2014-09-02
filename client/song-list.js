@@ -41,3 +41,5 @@ Template.songItem.events({
         Session.set('delete_dialog', this);
     }
 });
+
+
