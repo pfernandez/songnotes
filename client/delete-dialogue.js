@@ -16,7 +16,7 @@ Template.deleteDialog.events({
         if(songId === song.id()) {
             var result = Songs.findOne({ownerId: Meteor.userId()},
                 {sort: {created: -1}}, {fields: {title: 1}});
-            song.id(result._id);
+            result ? song.id(result._id) : song.id(null);
         }
         
         // Remove any associated recordings by _id.

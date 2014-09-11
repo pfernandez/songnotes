@@ -45,6 +45,10 @@ Deps.autorun(function() {
                 song.add({title: newTitle, content: newContent});
             }
             
+            if(typeof toggleLists == 'function') {
+                toggleLists();
+            }
+            
             justLoggedIn = false;
         }
         song.loadMostRecent();

@@ -2,15 +2,28 @@
 var savedSelection = null, // temp storage for the Rangy library
     interval = null;       // for the "saving..." message
 
-Template.editor.songContent = function() {
-    return song.content();
-}
+
+
+Template.editor.rendered = function () {
+    // The Blaze templating engine doesn't handle contenteditable elements
+    // well yet, so add the reactivity manually.
+    var that = this;
+    this.contentAutorun = Deps.autorun(function () {
+        var content = song.content();
+        if(Session.get('song_id')) {
+            that.find("#content").innerHTML = content;
+        }
+        else {
+            that.find("#content").innerHTML = '';
+        }
+    });
+};
 
 Template.editor.events({
 
     // Store the content in the editor.
     'input #content' : function(e) {
-        //savedSelection = rangy.saveSelection();
+       // savedSelection = rangy.saveSelection();
         if(song.id()) {
         
             // If "saving..." is not visible, show it.
@@ -50,11 +63,11 @@ Template.editor.events({
         return false;
     }
 });
-
+/*
 Template.editor.rendered = function() {
     // Restore selection and/or cursor position when the content is redrawn.
     if(savedSelection) {
         rangy.restoreSelection(savedSelection);
     }
 }
-
+*/

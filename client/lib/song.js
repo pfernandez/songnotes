@@ -78,6 +78,8 @@ song = {
         }
     },
     
+    contentIsReactive: true,
+    
     // Returns a song's content, or updates the content if provided.
     content: function(newContent, callback) {
         if(newContent) {
@@ -89,9 +91,10 @@ song = {
         else {
             songObj = Songs.findOne({_id: this.id()}, {
                 fields: {content: 1},
-                reactive: false
+                reactive: this.contentIsReactive
             });
             if(songObj) {
+                this.contentIsReactive = false;
                 return _.unescape(songObj.content);
             }
         }
