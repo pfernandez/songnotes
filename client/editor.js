@@ -1,8 +1,5 @@
 
-var savedSelection = null, // temp storage for the Rangy library
-    interval = null;       // for the "saving..." message
-
-
+var interval = null;       // for the "saving..." message
 
 Template.editor.rendered = function () {
     // The Blaze templating engine doesn't handle contenteditable elements
@@ -23,7 +20,6 @@ Template.editor.events({
 
     // Store the content in the editor.
     'input #content' : function(e) {
-       // savedSelection = rangy.saveSelection();
         if(song.id()) {
         
             // If "saving..." is not visible, show it.
@@ -63,11 +59,3 @@ Template.editor.events({
         return false;
     }
 });
-/*
-Template.editor.rendered = function() {
-    // Restore selection and/or cursor position when the content is redrawn.
-    if(savedSelection) {
-        rangy.restoreSelection(savedSelection);
-    }
-}
-*/

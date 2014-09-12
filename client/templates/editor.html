@@ -1,9 +1,14 @@
 <template name="editor">
 
-    <div id="editor" class="panel panel-default full-height">
+    <div id="editor" class="full-height">
+    
+        <button type="button" class="pull-right btn btn-default">
+            Annotate
+        </button>
+        
         <div tabindex="2" data-placeholder="Type some lyrics..." 
-            id="content" class="panel-body" contenteditable="true"
-            ></div>
+            id="content" class="panel-body" contenteditable="true"></div>
+            
     </div>
 
     {{#unless currentUser}}
