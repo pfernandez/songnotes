@@ -3,7 +3,6 @@ This file will be executed only on the client, after everthing else in
 lib/ but before any other client directories.
 */
 
-
 // Client global variables
 contentHasFocus = false; // for returning focus to content on hot reload
 recordingAllowed = userCanAddSounds();

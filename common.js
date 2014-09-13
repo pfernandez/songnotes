@@ -121,9 +121,8 @@ getUniqueTitle = function(title) {
     return title;
 }
 
-
 ////////////////////////////////////////////////////////////////////////////////
-// Meteor.users: { currentSong }
+// Sounds
 
 Sounds = new FS.Collection('sounds', {
     stores: [

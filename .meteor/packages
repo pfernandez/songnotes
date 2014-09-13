@@ -12,4 +12,5 @@ cfs:filesystem
 cfs:ui
 iron:router
 sacha:spin
+sergeyt:typeahead
 
