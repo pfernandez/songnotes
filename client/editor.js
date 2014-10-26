@@ -24,16 +24,28 @@ Template.editor.annotations = function() {
 Template.editor.events({
 
     'click #insert' : function() {
-        var el = '<input class="form-control typeahead" name="team" '
-            + 'type="text" placeholder="A#..." autocomplete="off" '
-            + 'spellcheck="off" data-source="annotations"/>';
-        pasteHtmlAtCaret(el);
-        Meteor.typeahead('.typeahead', ['A', 'A7', 'Am', 'Am7', 'A#', 'A#7']);
+        pasteHtmlAtCaret('<span class="annotation-wrapper" '
+            + 'contenteditable="false"><input class="form-control typeahead" '
+            + 'name="team" type="text" placeholder="A#..." autocomplete="off" '
+            + 'spellcheck="off" data-source="annotations"/></span>');
+        Meteor.typeahead('.typeahead', chordList);
+        document.getElementsByClassName('typeahead')[0].focus();
     },
     
-    // TODO: replace the typeahead box with the chosen annotation.
-    'change .typeahead' : function(e) {
-        console.log(e.target);
+    // Replace the typeahead box with the chosen annotation.
+    'keyup .typeahead' : function(e) {
+        
+        // Submit when Enter or Tab is pressed.
+        var key = e.keyCode;
+        if(9 == key || 13 == key) {
+            e.preventDefault();
+            var wrapper = findParentBySelector(e.target, '.annotation-wrapper');
+            wrapper.innerHTML = '<span class="annotation">' + e.target.value + '</span>';
+            
+            // Insert the caret after the annotation.
+            var editor = document.getElementById('content');
+            insertCaretAfter(wrapper, editor); 
+         }
     },
     
     // Store the content in the editor.
@@ -111,4 +123,30 @@ function pasteHtmlAtCaret(html) {
         // IE < 9
         document.selection.createRange().pasteHTML(html);
     }
+}
+
+// Insert caret after node within container element.
+function insertCaretAfter(node, container) {
+    var range = document.createRange(),
+        sel = window.getSelection();
+    range.setStart(container, 0);
+    range.setEndAfter(node);
+    range.collapse();
+    sel.removeAllRanges();
+    sel.addRange(range);
+}
+
+function collectionHas(a, b) { //helper function (see below)
+    for(var i = 0, len = a.length; i < len; i ++) {
+        if(a[i] == b) return true;
+    }
+    return false;
+}
+function findParentBySelector(elm, selector) {
+    var all = document.querySelectorAll(selector);
+    var cur = elm.parentNode;
+    while(cur && !collectionHas(all, cur)) { //keep going up until you find a match
+        cur = cur.parentNode; //go up
+    }
+    return cur; //will return null if not found
 }
