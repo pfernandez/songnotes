@@ -23,7 +23,7 @@ audio = function() {
                            
         if (! navigator.getMedia) {
             alert('Sorry, audio recording is not natively supported in '
-                + 'your web browser. Try Chrome, Firefox, or Opera.');
+                + 'your web browser. Try Chrome or Firefox.');
             return;
         }
         
@@ -53,8 +53,10 @@ audio = function() {
     };
     
     var startRecording = function() {
+    
         audioRecorder.clear();
         Session.set('recording', true);
+        
         // Stop recording automatically after 1 minute.
         recTimer = setTimeout(function() {
             if(Session.get('recording')) {
@@ -64,6 +66,7 @@ audio = function() {
                     + " seconds for a recording.");
             }
         }, MAX_SECONDS_PER_SOUND * 1000);
+        
         audioRecorder.record();
     };
     
@@ -163,7 +166,7 @@ audio = function() {
         // Save a new sound to the server, or cache it locally if not logged in.
         save: function(audioFile) {
             
-            if(audioFile) {
+            if(audioFile && Meteor.userId()) {
                 // If a sound object was passed in, save it.
                 saveToFile(audioFile);
             }

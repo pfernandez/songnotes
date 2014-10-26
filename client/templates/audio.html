@@ -31,7 +31,7 @@
     <li data-id="{{_id}}" 
         class="list-group-item toggle in clearfix">
         
-        {{#if this.isUploaded}}
+        {{#unless soundLoading}}
         
             <button type="button" class="play-pause btn btn-lg btn-link">
                 <span class="glyphicon glyphicon-play"></span>
@@ -44,7 +44,7 @@
             
         {{else}}
             {{> FS.UploadProgressBar bootstrap=true}}
-        {{/if}}        
+        {{/unless}}        
                 
         <button type="button" class="close pull-right"
             data-toggle="modal" data-target="#deleteSongModal">

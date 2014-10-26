@@ -1,5 +1,5 @@
 
-var interval = null;       // for the "saving..." message
+var interval = null;  // for the "saving..." message
 
 Template.editor.rendered = function () {
     // The Blaze templating engine doesn't handle contenteditable elements
@@ -16,13 +16,9 @@ Template.editor.rendered = function () {
     });
 };
 
-Template.editor.annotations = function() {
-    console.log('adf');
-    return Annotations.find().fetch().map(function(it){ return it.name; });
-};
-
 Template.editor.events({
 
+	// Show the typeahead box and get ready to accept input.
     'click #insert' : function() {
         pasteHtmlAtCaret('<span class="annotation-wrapper" '
             + 'contenteditable="false"><input class="form-control typeahead" '
@@ -34,13 +30,14 @@ Template.editor.events({
     
     // Replace the typeahead box with the chosen annotation.
     'keyup .typeahead' : function(e) {
-        
+    
         // Submit when Enter or Tab is pressed.
         var key = e.keyCode;
         if(9 == key || 13 == key) {
             e.preventDefault();
-            var wrapper = findParentBySelector(e.target, '.annotation-wrapper');
-            wrapper.innerHTML = '<span class="annotation">' + e.target.value + '</span>';
+            var wrapper = findParent(e.target, '.annotation-wrapper');
+            wrapper.innerHTML = '<span class="annotation">' 
+            	+ e.target.value + '</span>';
             
             // Insert the caret after the annotation.
             var editor = document.getElementById('content');
@@ -48,7 +45,7 @@ Template.editor.events({
          }
     },
     
-    // Store the content in the editor.
+    // Periodically autosave the editor content.
     'input #content' : function(e) {
         if(song.id()) {
         
@@ -70,18 +67,21 @@ Template.editor.events({
             });
         }
         else {
+        	// Add a new song if it doesn't already exist.
             song.add({content: _.escape(e.target.innerHTML)});
         }
     },
     
+    // Track whether editor has focus so that it can be refocused after
+    // hot code reload.
     'focus #content': function() {
         contentHasFocus = true;
     },
-    
     'blur #content': function() {
         contentHasFocus = false;
     },
     
+    // Reveal and scroll to the login dialog when "Log in to save" is clicked.
     'click .logInToSave': function() {
         document.documentElement.scrollTop = 0;
         document.querySelector('.dropdown-toggle').click();
@@ -90,7 +90,7 @@ Template.editor.events({
     }
 });
 
-
+// Insert HTML at the current caret position. Used with annotations.
 function pasteHtmlAtCaret(html) {
     var sel, range;
     if (window.getSelection) {
@@ -125,7 +125,7 @@ function pasteHtmlAtCaret(html) {
     }
 }
 
-// Insert caret after node within container element.
+// Insert caret after node within a given container element.
 function insertCaretAfter(node, container) {
     var range = document.createRange(),
         sel = window.getSelection();
@@ -136,17 +136,21 @@ function insertCaretAfter(node, container) {
     sel.addRange(range);
 }
 
-function collectionHas(a, b) { //helper function (see below)
-    for(var i = 0, len = a.length; i < len; i ++) {
+// Return true if item (b) exists in collection (a), otherwise return false.
+function collectionHas(a, b) {
+    for(var i = 0, len = a.length; i < len; i++) {
         if(a[i] == b) return true;
     }
     return false;
 }
-function findParentBySelector(elm, selector) {
-    var all = document.querySelectorAll(selector);
-    var cur = elm.parentNode;
-    while(cur && !collectionHas(all, cur)) { //keep going up until you find a match
-        cur = cur.parentNode; //go up
+
+// Travel up the DOM until an element with the matching selector is found, 
+// and return the element. Return null if no match is found.
+function findParent(el, selector) {
+    var all = document.querySelectorAll(selector),
+    	node = el.parentNode;
+    while(node && ! collectionHas(all, node)) {
+        node = node.parentNode;
     }
-    return cur; //will return null if not found
+    return node;
 }

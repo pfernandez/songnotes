@@ -9,6 +9,9 @@ Template.audio.sounds = function() {
 }
 
 Template.audio.soundLoading = function() {
+
+	// TODO: figure out the progress bar with isUploaded() function.
+
     return (Session.get('sound_loading') ? true : false);
 }
 
