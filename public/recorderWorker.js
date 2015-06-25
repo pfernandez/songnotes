@@ -5,21 +5,21 @@ var recLength = 0,
 
 this.onmessage = function(e){
   switch(e.data.command){
-    case 'init':
-      init(e.data.config);
-      break;
-    case 'record':
-      record(e.data.buffer);
-      break;
-    case 'exportWAV':
-      exportWAV(e.data.type);
-      break;
-    case 'getBuffer':
-      getBuffer();
-      break;
-    case 'clear':
-      clear();
-      break;
+	case 'init':
+	  init(e.data.config);
+	  break;
+	case 'record':
+	  record(e.data.buffer);
+	  break;
+	case 'exportWAV':
+	  exportWAV(e.data.type);
+	  break;
+	case 'getBuffer':
+	  getBuffer();
+	  break;
+	case 'clear':
+	  clear();
+	  break;
   }
 };
 
@@ -60,8 +60,8 @@ function mergeBuffers(recBuffers, recLength){
   var result = new Float32Array(recLength);
   var offset = 0;
   for (var i = 0; i < recBuffers.length; i++){
-    result.set(recBuffers[i], offset);
-    offset += recBuffers[i].length;
+	result.set(recBuffers[i], offset);
+	offset += recBuffers[i].length;
   }
   return result;
 }
@@ -71,26 +71,26 @@ function interleave(inputL, inputR){
   var result = new Float32Array(length);
 
   var index = 0,
-    inputIndex = 0;
+	inputIndex = 0;
 
   while (index < length){
-    result[index++] = inputL[inputIndex];
-    result[index++] = inputR[inputIndex];
-    inputIndex++;
+	result[index++] = inputL[inputIndex];
+	result[index++] = inputR[inputIndex];
+	inputIndex++;
   }
   return result;
 }
 
 function floatTo16BitPCM(output, offset, input){
   for (var i = 0; i < input.length; i++, offset+=2){
-    var s = Math.max(-1, Math.min(1, input[i]));
-    output.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
+	var s = Math.max(-1, Math.min(1, input[i]));
+	output.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
   }
 }
 
 function writeString(view, offset, string){
   for (var i = 0; i < string.length; i++){
-    view.setUint8(offset + i, string.charCodeAt(i));
+	view.setUint8(offset + i, string.charCodeAt(i));
   }
 }
 
